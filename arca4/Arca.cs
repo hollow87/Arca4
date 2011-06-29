@@ -32,6 +32,8 @@ namespace arca4
         {
             this.terminate = false;
 
+            UserPool.Init();
+
             this.listener = new TcpListener(new IPEndPoint(IPAddress.Any, 22454));
             this.listener.Start();
 
@@ -57,12 +59,7 @@ namespace arca4
         private void ServiceCurrentUsers(uint time)
         {
             UserPool.Users.ForEach(x => x.SocketTasks(time));
-
-            UserPool.Users.FindAll(x => x.Expired).ForEach(x =>
-            {
-                // user parted
-            });
-
+            UserPool.Users.FindAll(x => x.Expired).ForEach(x => x.Disconnect());
             UserPool.Users.RemoveAll(x => x.Expired);
         }
 

@@ -30,7 +30,7 @@ namespace arca4
                 }
             }
 
-            if (Users.Count > 0)
+            if (Users.Count > 1)
                 Users.Sort((x, y) => x.ID - y.ID);
         }
 
