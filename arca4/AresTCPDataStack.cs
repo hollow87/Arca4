@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using Compression;
 
 namespace Ares.IO
 {
@@ -57,6 +58,17 @@ namespace Ares.IO
                 this.Msg = (ProtoMessage)this.data[2];
                 byte[] buf = this.data.GetRange(3, len).ToArray();
                 this.data.RemoveRange(0, (len + 3));
+
+                if (this.Msg == ProtoMessage.MSG_CHAT_CLIENTCOMPRESSED)
+                {
+                    buf = ZipLib.Decompress(buf);
+                    this.data.InsertRange(0, buf);
+                    len = BitConverter.ToUInt16(this.data.ToArray(), 0);
+                    this.Msg = (ProtoMessage)this.data[2];
+                    buf = this.data.GetRange(3, len).ToArray();
+                    this.data.RemoveRange(0, (len + 3));
+                }
+
                 return buf;
             }
         }
