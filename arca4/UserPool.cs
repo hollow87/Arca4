@@ -31,7 +31,12 @@ namespace arca4
             }
 
             if (Users.Count > 1)
-                Users.Sort((x, y) => x.ID - y.ID);
+                Users.Sort((x, y) => x.ID.CompareTo(y.ID));
+        }
+
+        public static void BroadcastToVroom(ushort vroom, byte[] data)
+        {
+            Users.FindAll(x => x.LoggedIn && x.Vroom == vroom).ForEach(x => x.SendPacket(data));
         }
 
     }

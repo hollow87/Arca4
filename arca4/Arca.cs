@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -26,6 +23,8 @@ namespace arca4
 
             if (this.listener != null)
                 this.listener.Stop();
+
+            UserPool.Users.ForEach(x => x.TerminateSocket());
         }
 
         private void ServerThread()

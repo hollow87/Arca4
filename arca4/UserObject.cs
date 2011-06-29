@@ -17,6 +17,8 @@ namespace arca4
         private Socket sock;
         private uint timestamp;
         private uint socket_health = 0;
+        private ushort vroom = 0;
+        private String name = String.Empty;
 
         private AresTCPDataStack stack = new AresTCPDataStack();
         private List<byte[]> data_out = new List<byte[]>();
@@ -32,29 +34,26 @@ namespace arca4
             this.Expired = false;
         }
 
+        public void SendPacket(byte[] data)
+        {
+            this.data_out.Add(data);
+        }
+
         public void SocketTasks(uint now)
         {
-            while (this.data_out.Count > 0)
-            {
-                try
-                {
-                    this.sock.Send(this.data_out[0]);
-                    this.data_out.RemoveAt(0);
-                }
-                catch { break; }
-            }
+            this.SendPending();
 
             if (!this.stack.ExtractDataFromSocket(this.sock))
                 this.socket_health++;
             else
                 this.socket_health = 0;
 
-            if (this.LoggedIn) // last update packet received?
+            if (this.LoggedIn)
             {
                 if ((this.timestamp + 240) < now)
                     this.Expired = true;
             }
-            else // loitering?
+            else
             {
                 if ((this.timestamp + 15) < now)
                     this.Expired = true;
@@ -75,7 +74,7 @@ namespace arca4
             }
         }
 
-        public void Disconnect()
+        private void SendPending()
         {
             while (this.data_out.Count > 0)
             {
@@ -86,16 +85,30 @@ namespace arca4
                 }
                 catch { break; }
             }
+        }
 
+        public void Disconnect()
+        {
+            this.SendPending();
+            this.TerminateSocket();
+            this.socket_health = 10;
+            this.stack.Dispose();
+
+            if (this.LoggedIn)
+            {
+                this.LoggedIn = false;
+                ServerEvents.OnPart(this);
+            }
+        }
+
+        public void TerminateSocket()
+        {
             try { this.sock.Disconnect(false); }
             catch { }
             try { this.sock.Shutdown(SocketShutdown.Both); }
             catch { }
             try { this.sock.Close(); }
             catch { }
-
-            this.socket_health = 10;
-            this.stack.Dispose();
         }
 
         public bool Expired
@@ -103,5 +116,29 @@ namespace arca4
             get { return this.socket_health > 5; }
             set { this.socket_health = value ? (uint)10 : (uint)0; }
         }
+
+        public ushort Vroom
+        {
+            get { return this.vroom; }
+            set
+            {
+                this.vroom = value;
+            }
+        }
+
+        public String Name
+        {
+            get { return this.name; }
+            set
+            {
+                this.name = value;
+            }
+        }
+
+        public void PopulateCredentials(AresTCPPacketReader packet)
+        {
+            
+        }
+
     }
 }
