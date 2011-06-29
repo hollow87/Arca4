@@ -59,7 +59,7 @@ namespace Ares.IO
                 byte[] buf = this.data.GetRange(3, len).ToArray();
                 this.data.RemoveRange(0, (len + 3));
 
-                if (this.Msg == ProtoMessage.MSG_CHAT_CLIENTCOMPRESSED)
+                while (this.Msg == ProtoMessage.MSG_CHAT_CLIENTCOMPRESSED)
                 {
                     buf = ZipLib.Decompress(buf);
                     this.data.InsertRange(0, buf);
