@@ -113,5 +113,40 @@ namespace arca4
             return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_MYFEATURES);
         }
 
+        public static byte[] Avatar(UserObject userobj)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(userobj.Name);
+            packet.WriteBytes(userobj.Avatar);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_AVATAR);
+        }
+
+        public static byte[] PersonalMessage(UserObject userobj)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(userobj.Name);
+            packet.WriteString(userobj.PersonalMessage, false);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_PERSONAL_MESSAGE);
+        }
+
+        public static byte[] NoSuch(String text)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+
+            if (text.Length > 1024)
+                text = text.Substring(0, 1024);
+
+            packet.WriteString(text, false);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_NOSUCH);
+        }
+
+        public static byte[] OpChange(UserObject userobj)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteByte(userobj.Level > 0 ? (byte)1 : (byte)0);
+            packet.WriteByte(0);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_OPCHANGE);
+        }
+
     }
 }

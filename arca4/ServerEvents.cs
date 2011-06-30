@@ -20,7 +20,7 @@ namespace arca4
 
         public static void OnJoin(UserObject userobj)
         {
-
+            
         }
 
         public static void OnPart(UserObject userobj)

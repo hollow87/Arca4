@@ -75,6 +75,15 @@ namespace arca4
             userobj.SendPacket(AresTCPPackets.UserListBotItem());
             Users.FindAll(x => x.LoggedIn && x.Vroom == userobj.Vroom).ForEach(x => userobj.SendPacket(AresTCPPackets.UserListItem(x)));
             userobj.SendPacket(AresTCPPackets.UserListEnd());
+
+            Users.FindAll(x => x.LoggedIn && x.Vroom == userobj.Vroom).ForEach(x =>
+            {
+                if (x.Avatar.Length > 0)
+                    userobj.SendPacket(AresTCPPackets.Avatar(x));
+
+                if (!String.IsNullOrEmpty(x.PersonalMessage))
+                    userobj.SendPacket(AresTCPPackets.PersonalMessage(x));
+            });
         }
     }
 }

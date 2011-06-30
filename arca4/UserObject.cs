@@ -38,7 +38,8 @@ namespace arca4
         private ushort vroom = 0;
         private String name = String.Empty;
         private byte level = 0;
-
+        private byte[] avatar = new byte[] { };
+        private String personal_message = String.Empty;
         private AresTCPDataStack stack = new AresTCPDataStack();
         private List<byte[]> data_out = new List<byte[]>();
 
@@ -90,7 +91,7 @@ namespace arca4
                     ProtoMessage msg = this.stack.Msg;
 
                     if (!this.Expired)
-                        AresTCPPacketProcessor.Evaluate(this, msg, new AresTCPPacketReader(buf));
+                        AresTCPPacketProcessor.Evaluate(this, msg, new AresTCPPacketReader(buf), now);
                     else break;
                 }
                 catch { this.Expired = true; }
@@ -167,6 +168,34 @@ namespace arca4
             }
         }
 
+        public byte[] Avatar
+        {
+            get { return this.avatar; }
+            set
+            {
+                this.avatar = value;
+
+                if (this.avatar.Length < 10)
+                    this.avatar = new byte[] { };
+
+                UserPool.BroadcastToVroom(this.vroom, AresTCPPackets.Avatar(this));
+            }
+        }
+
+        public String PersonalMessage
+        {
+            get { return this.personal_message; }
+            set
+            {
+                this.personal_message = value;
+
+                if (this.personal_message.Trim().Length == 0)
+                    this.personal_message = String.Empty;
+
+                UserPool.BroadcastToVroom(this.vroom, AresTCPPackets.PersonalMessage(this));
+            }
+        }
+
         public void PopulateCredentials(AresTCPPacketReader packet)
         {
             this.Guid = packet.ReadGuid();
@@ -190,6 +219,11 @@ namespace arca4
             this.Sex = packet.ReadByte();
             this.Country = packet.ReadByte();
             this.Location = packet.ReadString();
+        }
+
+        public void Pinged(uint now)
+        {
+            this.timestamp = now;
         }
 
     }

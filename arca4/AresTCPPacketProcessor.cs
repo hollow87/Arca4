@@ -8,12 +8,28 @@ namespace arca4
 {
     class AresTCPPacketProcessor
     {
-        public static void Evaluate(UserObject userobj, ProtoMessage msg, AresTCPPacketReader packet)
+        public static void Evaluate(UserObject userobj, ProtoMessage msg, AresTCPPacketReader packet, uint time)
         {
+            if (!userobj.LoggedIn)
+                if (msg > ProtoMessage.MSG_CHAT_CLIENT_LOGIN)
+                    throw new Exception();
+
             switch (msg)
             {
                 case ProtoMessage.MSG_CHAT_CLIENT_LOGIN:
                     ProcessLogin(userobj, packet);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_UPDATE_STATUS:
+                    userobj.Pinged(time);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_AVATAR:
+                    userobj.Avatar = packet.ReadBytes();
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_PERSONAL_MESSAGE:
+                    userobj.PersonalMessage = packet.ReadString();
                     break;
             }
         }
@@ -37,6 +53,7 @@ namespace arca4
             userobj.SendPacket(AresTCPPackets.MyFeatures(userobj));
             userobj.SendPacket(AresTCPPackets.TopicFirst());
             UserPool.SendUserList(userobj);
+            userobj.SendPacket(AresTCPPackets.OpChange(userobj));
             ServerEvents.OnJoin(userobj);
         }
 
