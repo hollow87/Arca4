@@ -32,6 +32,11 @@ namespace arca4
                 return;
             }
 
+            userobj.LoggedIn = true;
+            userobj.SendPacket(AresTCPPackets.LoginAck(userobj));
+            userobj.SendPacket(AresTCPPackets.MyFeatures(userobj));
+            userobj.SendPacket(AresTCPPackets.TopicFirst());
+            UserPool.SendUserList(userobj);
             ServerEvents.OnJoin(userobj);
         }
 

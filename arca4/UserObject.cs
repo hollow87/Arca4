@@ -12,13 +12,32 @@ namespace arca4
     {
         public int ID { get; set; }
         public IPAddress ExternalIP { get; private set; }
-        public bool LoggedIn { get; private set; }
+        public bool LoggedIn { get; set; }
+        public uint Cookie { get; private set; }
+        public Guid Guid { get; private set; }
+        public ushort FileCount { get; private set; }
+        public ushort Port { get; private set; }
+        public IPAddress NodeIP { get; private set; }
+        public ushort NodePort { get; private set; }
+        public String OrgName { get; private set; }
+        public String Version { get; private set; }
+        public IPAddress LocalIP { get; private set; }
+        public bool CanBrowse { get; private set; }
+        public byte CurrentUploads { get; private set; }
+        public byte MaxUploads { get; private set; }
+        public byte CurrentQueued { get; private set; }
+        public byte Age { get; private set; }
+        public byte Sex { get; private set; }
+        public byte Country { get; private set; }
+        public String Location { get; private set; }
+        
 
         private Socket sock;
         private uint timestamp;
         private uint socket_health = 0;
         private ushort vroom = 0;
         private String name = String.Empty;
+        private byte level = 0;
 
         private AresTCPDataStack stack = new AresTCPDataStack();
         private List<byte[]> data_out = new List<byte[]>();
@@ -32,6 +51,10 @@ namespace arca4
             UserPool.SetID(this);
             this.LoggedIn = false;
             this.Expired = false;
+            this.Cookie = now;
+
+            while (UserPool.Users.Find(x => x.LoggedIn && x.Cookie == this.Cookie) != null)
+                this.Cookie++;
         }
 
         public void SendPacket(byte[] data)
@@ -135,9 +158,38 @@ namespace arca4
             }
         }
 
+        public byte Level
+        {
+            get { return this.level; }
+            set
+            {
+                this.level = value;
+            }
+        }
+
         public void PopulateCredentials(AresTCPPacketReader packet)
         {
-            
+            this.Guid = packet.ReadGuid();
+            this.FileCount = packet.ReadUInt16();
+            packet.SkipByte(); // not used
+            this.Port = packet.ReadUInt16();
+            this.NodeIP = packet.ReadIP();
+            this.NodePort = packet.ReadUInt16();
+            packet.SkipBytes(4); // line speed
+            this.OrgName = UserPool.PrepareUserName(packet.ReadString(), this.Cookie);
+            this.name = this.OrgName;
+            this.Version = packet.ReadString();
+            this.LocalIP = packet.ReadIP();
+            packet.SkipBytes(4); // external ip
+            this.CanBrowse = packet.ReadByte() >= 3;
+            this.FileCount = this.CanBrowse ? this.FileCount : (ushort)0;
+            this.CurrentUploads = packet.ReadByte();
+            this.MaxUploads = packet.ReadByte();
+            this.CurrentQueued = packet.ReadByte();
+            this.Age = packet.ReadByte();
+            this.Sex = packet.ReadByte();
+            this.Country = packet.ReadByte();
+            this.Location = packet.ReadString();
         }
 
     }

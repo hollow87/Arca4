@@ -33,7 +33,7 @@ namespace arca4
 
             UserPool.Init();
 
-            this.listener = new TcpListener(new IPEndPoint(IPAddress.Any, 22454));
+            this.listener = new TcpListener(new IPEndPoint(IPAddress.Any, Settings.Port));
             this.listener.Start();
 
             while (true)

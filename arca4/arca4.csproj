@@ -46,11 +46,14 @@
     <Compile Include="Arca.cs" />
     <Compile Include="AresTCPPacketProcessor.cs" />
     <Compile Include="AresTCPPacketReader.cs" />
+    <Compile Include="AresTCPPackets.cs" />
+    <Compile Include="AresTCPPacketWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AresTCPDataStack.cs" />
     <Compile Include="ProtoMessage.cs" />
     <Compile Include="ServerEvents.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="UserObject.cs" />
     <Compile Include="UserPool.cs" />
     <Compile Include="ZipLib.cs" />

@@ -9,6 +9,7 @@ namespace arca4
     {
         public static bool OnJoinCheck(UserObject userobj)
         {
+            UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Join(userobj));
             return true;
         }
 
@@ -24,7 +25,7 @@ namespace arca4
 
         public static void OnPart(UserObject userobj)
         {
-
+            UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Part(userobj));
         }
 
     }
