@@ -25,11 +25,15 @@ namespace arca4
                     break;
 
                 case ProtoMessage.MSG_CHAT_CLIENT_AVATAR:
-                    userobj.Avatar = packet.ReadBytes();
+                    if (ServerEvents.OnAvatarReceived(userobj))
+                        if (!userobj.Expired)
+                            userobj.Avatar = packet.ReadBytes();
                     break;
 
                 case ProtoMessage.MSG_CHAT_CLIENT_PERSONAL_MESSAGE:
-                    userobj.PersonalMessage = packet.ReadString();
+                    if (ServerEvents.OnPersonalMessageReceived(userobj))
+                        if (!userobj.Expired)
+                            userobj.PersonalMessage = packet.ReadString();
                     break;
             }
         }

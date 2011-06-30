@@ -28,5 +28,15 @@ namespace arca4
             UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Part(userobj));
         }
 
+        public static bool OnAvatarReceived(UserObject userobj)
+        {
+            return true;
+        }
+
+        public static bool OnPersonalMessageReceived(UserObject userobj)
+        {
+            return true;
+        }
+
     }
 }
