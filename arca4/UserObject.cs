@@ -115,7 +115,7 @@ namespace arca4
         {
             this.SendPending();
             this.TerminateSocket();
-            this.socket_health = 10;
+            this.Expired = true;
             this.stack.Dispose();
 
             if (this.LoggedIn)

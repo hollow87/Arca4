@@ -38,5 +38,30 @@ namespace arca4
             return true;
         }
 
+        public static String OnTextBefore(UserObject userobj, String text)
+        {
+            return text;
+        }
+
+        public static void OnTextAfter(UserObject userobj, String text)
+        {
+
+        }
+
+        public static String OnEmoteBefore(UserObject userobj, String text)
+        {
+            return text;
+        }
+
+        public static void OnEmoteAfter(UserObject userobj, String text)
+        {
+
+        }
+
+        public static String OnPM(UserObject userobj, UserObject target, String text)
+        {
+            return text;
+        }
+
     }
 }
