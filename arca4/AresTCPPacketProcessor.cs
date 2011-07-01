@@ -35,6 +35,14 @@ namespace arca4
                         if (!userobj.Expired)
                             userobj.PersonalMessage = packet.ReadString();
                     break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_PUBLIC:
+                    ProcessPublicText(userobj, packet);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_EMOTE:
+                    ProcessEmoteText(userobj, packet);
+                    break;
             }
         }
 
@@ -52,6 +60,7 @@ namespace arca4
                 return;
             }
 
+            UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Join(userobj));
             userobj.LoggedIn = true;
             userobj.SendPacket(AresTCPPackets.LoginAck(userobj));
             userobj.SendPacket(AresTCPPackets.MyFeatures(userobj));
@@ -59,6 +68,32 @@ namespace arca4
             UserPool.SendUserList(userobj);
             userobj.SendPacket(AresTCPPackets.OpChange(userobj));
             ServerEvents.OnJoin(userobj);
+        }
+
+        private static void ProcessPublicText(UserObject userobj, AresTCPPacketReader packet)
+        {
+            String text = packet.ReadString();
+            text = ServerEvents.OnTextBefore(userobj, text);
+
+            if (!userobj.Expired)
+                if (!String.IsNullOrEmpty(text))
+                {
+                    UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Public(userobj.Name, text));
+                    ServerEvents.OnTextAfter(userobj, text);
+                }
+        }
+
+        private static void ProcessEmoteText(UserObject userobj, AresTCPPacketReader packet)
+        {
+            String text = packet.ReadString();
+            text = ServerEvents.OnEmoteBefore(userobj, text);
+
+            if (!userobj.Expired)
+                if (!String.IsNullOrEmpty(text))
+                {
+                    UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Emote(userobj.Name, text));
+                    ServerEvents.OnEmoteAfter(userobj, text);
+                }
         }
 
     }

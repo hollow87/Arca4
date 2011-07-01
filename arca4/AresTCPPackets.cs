@@ -148,5 +148,21 @@ namespace arca4
             return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_OPCHANGE);
         }
 
+        public static byte[] Public(String username, String text)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(username);
+            packet.WriteString(text, false);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_PUBLIC);
+        }
+
+        public static byte[] Emote(String username, String text)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(username);
+            packet.WriteString(text, false);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_EMOTE);
+        }
+
     }
 }

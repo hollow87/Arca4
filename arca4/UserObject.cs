@@ -122,6 +122,7 @@ namespace arca4
             {
                 this.LoggedIn = false;
                 ServerEvents.OnPart(this);
+                UserPool.BroadcastToVroom(this.Vroom, AresTCPPackets.Part(this));
             }
         }
 
