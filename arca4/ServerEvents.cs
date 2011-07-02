@@ -62,5 +62,10 @@ namespace arca4
             return text;
         }
 
+        public static void OnBotPM(UserObject userobj, String text)
+        {
+
+        }
+
     }
 }

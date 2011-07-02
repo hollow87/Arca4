@@ -43,6 +43,14 @@ namespace arca4
                 case ProtoMessage.MSG_CHAT_CLIENT_EMOTE:
                     ProcessEmoteText(userobj, packet);
                     break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_PVT:
+                    ProcessPrivateText(userobj, packet);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_IGNORELIST:
+                    ProcessIgnoreRequest(userobj, packet);
+                    break;
             }
         }
 
@@ -100,19 +108,56 @@ namespace arca4
         {
             String name = packet.ReadString();
             String text = packet.ReadString();
-            UserObject target = UserPool.Users.Find(x => x.Name == name);
 
-            if (target == null)
-                userobj.SendPacket(AresTCPPackets.OfflineUser(name));
-            else if (target.Ignores.Contains(userobj.Name))
-                userobj.SendPacket(AresTCPPackets.IsIgnoringYou(name));
+            if (name == Settings.BotName)
+                ServerEvents.OnBotPM(userobj, text);
             else
             {
-                text = ServerEvents.OnPM(userobj, target, text);
+                UserObject target = UserPool.Users.Find(x => x.Name == name);
 
-                if (!userobj.Expired)
-                    if (!String.IsNullOrEmpty(text))
-                        target.SendPacket(AresTCPPackets.Private(userobj.Name, text));
+                if (target == null)
+                    userobj.SendPacket(AresTCPPackets.OfflineUser(name));
+                else if (target.Ignores.Contains(userobj.Name))
+                    userobj.SendPacket(AresTCPPackets.IsIgnoringYou(name));
+                else
+                {
+                    text = ServerEvents.OnPM(userobj, target, text);
+
+                    if (!userobj.Expired)
+                        if (!String.IsNullOrEmpty(text))
+                            target.SendPacket(AresTCPPackets.Private(userobj.Name, text));
+                }
+            }
+        }
+
+        private static void ProcessIgnoreRequest(UserObject userobj, AresTCPPacketReader packet)
+        {
+            byte type = packet.ReadByte();
+            String name = packet.ReadString();
+            UserObject target = UserPool.Users.Find(x => x.Name == name);
+
+            if (target != null)
+            {
+                if (type == 0) // unignore
+                {
+                    if (userobj.Ignores.Contains(target.Name))
+                        userobj.Ignores.Remove(target.Name);
+
+                    userobj.SendPacket(AresTCPPackets.NoSuch(target.Name + " is unignored"));
+                }
+                else
+                {
+                    if (target.Level > 0)
+                    {
+                        userobj.SendPacket(AresTCPPackets.NoSuch("you cannot ignore this admin"));
+                        return;
+                    }
+
+                    if (!userobj.Ignores.Contains(target.Name))
+                        userobj.Ignores.Add(target.Name);
+
+                    userobj.SendPacket(AresTCPPackets.NoSuch(target.Name + " is ignored"));
+                }
             }
         }
 

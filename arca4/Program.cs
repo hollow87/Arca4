@@ -11,6 +11,7 @@ namespace arca4
 
         static void Main()
         {
+            Console.Title = "Arca4 dev console";
             arca = new Arca();
             arca.Start();
         }
