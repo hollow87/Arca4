@@ -42,7 +42,7 @@ namespace arca4
 
         private static String[] Illegal = new String[]
         {
-            "￼", "", "­", "\"", "/", "\\", "www."
+            "￼", "", "­", "/", "\\", "www."
         };
 
         public static String PrepareUserName(String name, uint cookie)

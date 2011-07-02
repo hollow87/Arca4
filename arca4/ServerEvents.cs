@@ -67,5 +67,10 @@ namespace arca4
 
         }
 
+        public static void OnCommand(UserObject userobj, String command, UserObject target, String args)
+        {
+
+        }
+
     }
 }

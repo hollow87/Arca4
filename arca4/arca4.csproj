@@ -48,6 +48,8 @@
     <Compile Include="AresTCPPacketReader.cs" />
     <Compile Include="AresTCPPackets.cs" />
     <Compile Include="AresTCPPacketWriter.cs" />
+    <Compile Include="CommandObject.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AresTCPDataStack.cs" />

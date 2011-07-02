@@ -51,6 +51,10 @@ namespace arca4
                 case ProtoMessage.MSG_CHAT_CLIENT_IGNORELIST:
                     ProcessIgnoreRequest(userobj, packet);
                     break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_COMMAND:
+                    ProcessCommandText(userobj, packet.ReadString());
+                    break;
             }
         }
 
@@ -81,6 +85,15 @@ namespace arca4
         private static void ProcessPublicText(UserObject userobj, AresTCPPacketReader packet)
         {
             String text = packet.ReadString();
+
+            if (text.StartsWith("#"))
+            {
+                ProcessCommandText(userobj, text.Substring(1));
+
+                if (text.Substring(1).StartsWith("login"))
+                    return;
+            }
+
             text = ServerEvents.OnTextBefore(userobj, text);
 
             if (!userobj.Expired)
@@ -89,6 +102,12 @@ namespace arca4
                     UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Public(userobj.Name, text));
                     ServerEvents.OnTextAfter(userobj, text);
                 }
+        }
+
+        private static void ProcessCommandText(UserObject userobj, String text)
+        {
+            CommandObject cmd = Helpers.TextToCommand(userobj, text);
+            ServerEvents.OnCommand(userobj, text, cmd.target, cmd.args);
         }
 
         private static void ProcessEmoteText(UserObject userobj, AresTCPPacketReader packet)
@@ -110,10 +129,21 @@ namespace arca4
             String text = packet.ReadString();
 
             if (name == Settings.BotName)
-                ServerEvents.OnBotPM(userobj, text);
+            {
+                if (text.StartsWith("#") || text.StartsWith("/"))
+                {
+                    ProcessCommandText(userobj, text.Substring(1));
+
+                    if (text.Substring(1).StartsWith("login"))
+                        text = String.Empty;
+                }
+
+                if (!String.IsNullOrEmpty(text))
+                    ServerEvents.OnBotPM(userobj, text);
+            }
             else
             {
-                UserObject target = UserPool.Users.Find(x => x.Name == name);
+                UserObject target = UserPool.Users.Find(x => x.LoggedIn && x.Name == name);
 
                 if (target == null)
                     userobj.SendPacket(AresTCPPackets.OfflineUser(name));
@@ -134,7 +164,7 @@ namespace arca4
         {
             byte type = packet.ReadByte();
             String name = packet.ReadString();
-            UserObject target = UserPool.Users.Find(x => x.Name == name);
+            UserObject target = UserPool.Users.Find(x => x.LoggedIn && x.Name == name);
 
             if (target != null)
             {
