@@ -164,5 +164,26 @@ namespace arca4
             return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_EMOTE);
         }
 
+        public static byte[] Private(String username, String text)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(username);
+            packet.WriteString(text, false);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_PVT);
+        }
+
+        public static byte[] IsIgnoringYou(String name)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(name);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_ISIGNORINGYOU);
+        }
+
+        public static byte[] OfflineUser(String name)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(name);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_OFFLINEUSER);
+        }
     }
 }

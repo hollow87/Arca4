@@ -30,6 +30,7 @@ namespace arca4
         public byte Sex { get; private set; }
         public byte Country { get; private set; }
         public String Location { get; private set; }
+        public List<String> Ignores { get; private set; }
         
 
         private Socket sock;
@@ -56,6 +57,8 @@ namespace arca4
 
             while (UserPool.Users.Find(x => x.LoggedIn && x.Cookie == this.Cookie) != null)
                 this.Cookie++;
+
+            this.Ignores = new List<String>();
         }
 
         public void SendPacket(byte[] data)
@@ -174,12 +177,16 @@ namespace arca4
             get { return this.avatar; }
             set
             {
-                this.avatar = value;
+                byte[] temp = value;
 
-                if (this.avatar.Length < 10)
-                    this.avatar = new byte[] { };
+                if (temp.Length < 10)
+                    temp = new byte[] { };
 
-                UserPool.BroadcastToVroom(this.vroom, AresTCPPackets.Avatar(this));
+                if (!this.avatar.SequenceEqual<byte>(temp))
+                {
+                    this.avatar = temp;
+                    UserPool.BroadcastToVroom(this.vroom, AresTCPPackets.Avatar(this));
+                }
             }
         }
 
@@ -188,12 +195,16 @@ namespace arca4
             get { return this.personal_message; }
             set
             {
-                this.personal_message = value;
+                String temp = value;
 
-                if (this.personal_message.Trim().Length == 0)
-                    this.personal_message = String.Empty;
+                if (temp.Trim().Length == 0)
+                    temp = String.Empty;
 
-                UserPool.BroadcastToVroom(this.vroom, AresTCPPackets.PersonalMessage(this));
+                if (temp != this.personal_message)
+                {
+                    this.personal_message = temp;
+                    UserPool.BroadcastToVroom(this.vroom, AresTCPPackets.PersonalMessage(this));
+                }
             }
         }
 

@@ -96,5 +96,25 @@ namespace arca4
                 }
         }
 
+        private static void ProcessPrivateText(UserObject userobj, AresTCPPacketReader packet)
+        {
+            String name = packet.ReadString();
+            String text = packet.ReadString();
+            UserObject target = UserPool.Users.Find(x => x.Name == name);
+
+            if (target == null)
+                userobj.SendPacket(AresTCPPackets.OfflineUser(name));
+            else if (target.Ignores.Contains(userobj.Name))
+                userobj.SendPacket(AresTCPPackets.IsIgnoringYou(name));
+            else
+            {
+                text = ServerEvents.OnPM(userobj, target, text);
+
+                if (!userobj.Expired)
+                    if (!String.IsNullOrEmpty(text))
+                        target.SendPacket(AresTCPPackets.Private(userobj.Name, text));
+            }
+        }
+
     }
 }
