@@ -12,7 +12,12 @@ namespace arca4
             return true;
         }
 
-        public static void OnRejected(UserObject userobj)
+        public static void OnRejected(UserObject userobj, RejectionType e)
+        {
+
+        }
+
+        public static void OnMOTD(UserObject userobj)
         {
 
         }

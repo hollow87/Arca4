@@ -65,9 +65,23 @@ namespace arca4
 
             userobj.PopulateCredentials(packet);
 
+            if (userobj.Name == null)
+            {
+                ServerEvents.OnRejected(userobj, RejectionType.NameInUse);
+                userobj.Expired = true;
+                return;
+            }
+
+            if (Bans.IsBanned(userobj))
+            {
+                ServerEvents.OnRejected(userobj, RejectionType.Banned);
+                userobj.Expired = true;
+                return;
+            }
+
             if (!ServerEvents.OnJoinCheck(userobj))
             {
-                ServerEvents.OnRejected(userobj);
+                ServerEvents.OnRejected(userobj, RejectionType.Script);
                 userobj.Expired = true;
                 return;
             }
@@ -79,6 +93,7 @@ namespace arca4
             userobj.SendPacket(AresTCPPackets.TopicFirst());
             UserPool.SendUserList(userobj);
             userobj.SendPacket(AresTCPPackets.OpChange(userobj));
+            ServerEvents.OnMOTD(userobj);
             ServerEvents.OnJoin(userobj);
         }
 

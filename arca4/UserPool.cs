@@ -57,15 +57,14 @@ namespace arca4
             while (Encoding.UTF8.GetByteCount(str) > 20)
                 str = str.Substring(0, str.Length - 1);
 
-            bool accepted = true;
-
             if (Users.Find(x => x.LoggedIn && (x.Name == str || x.OrgName == str)) != null)
-                accepted = false;
-            else if (Encoding.UTF8.GetByteCount(str) < 2 || str == Settings.BotName)
-                accepted = false;
+                return null;
 
-            if (!accepted)
-                str = "anon " + cookie;
+            if (str == Settings.BotName)
+                return null;
+
+            if (Encoding.UTF8.GetByteCount(str) < 2)
+                return "anon " + cookie;
 
             return str;
         }
