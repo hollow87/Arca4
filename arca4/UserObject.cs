@@ -31,6 +31,9 @@ namespace arca4
         public byte Country { get; private set; }
         public String Location { get; private set; }
         public List<String> Ignores { get; private set; }
+        public bool FastPing { get; set; }
+        public bool Ghost { get; set; }
+        public uint LastFastPing { get; set; }
         
 
         private Socket sock;
@@ -53,7 +56,10 @@ namespace arca4
             UserPool.SetID(this);
             this.LoggedIn = false;
             this.Expired = false;
+            this.FastPing = false;
+            this.Ghost = false;
             this.Cookie = now;
+            this.LastFastPing = now;
 
             while (UserPool.Users.Find(x => x.LoggedIn && x.Cookie == this.Cookie) != null)
                 this.Cookie++;
@@ -217,7 +223,8 @@ namespace arca4
             this.NodeIP = packet.ReadIP();
             this.NodePort = packet.ReadUInt16();
             packet.SkipBytes(4); // line speed
-            this.OrgName = UserPool.PrepareUserName(packet.ReadString(), this.Cookie);
+            this.OrgName = packet.ReadString();
+            this.OrgName = UserPool.PrepareUserName(this);
             this.name = this.OrgName;
             this.Version = packet.ReadString();
             this.LocalIP = packet.ReadIP();

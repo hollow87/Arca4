@@ -16,8 +16,16 @@ namespace arca4
 
             switch (msg)
             {
+                case ProtoMessage.MSG_CHAT_CLIENT_RELOGIN:
+                    userobj.FastPing = true;
+                    goto case ProtoMessage.MSG_CHAT_CLIENT_LOGIN;
+
                 case ProtoMessage.MSG_CHAT_CLIENT_LOGIN:
-                    ProcessLogin(userobj, packet);
+                    ProcessLogin(userobj, packet, time);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_FASTPING:
+                    userobj.FastPing = true;
                     break;
 
                 case ProtoMessage.MSG_CHAT_CLIENT_UPDATE_STATUS:
@@ -58,11 +66,11 @@ namespace arca4
             }
         }
 
-        private static void ProcessLogin(UserObject userobj, AresTCPPacketReader packet)
+        private static void ProcessLogin(UserObject userobj, AresTCPPacketReader packet, uint time)
         {
             if (userobj.LoggedIn)
                 throw new Exception();
-
+            
             userobj.PopulateCredentials(packet);
 
             if (userobj.Name == null)
@@ -72,10 +80,29 @@ namespace arca4
                 return;
             }
 
+            if (UserPool.Users.FindAll(x => x.ExternalIP.Equals(userobj.ExternalIP)).Count > 3)
+            {
+                ServerEvents.OnRejected(userobj, RejectionType.ClientExcess);
+                userobj.Expired = true;
+                userobj.LoggedIn = userobj.Ghost;
+                return;
+            }
+
+            if (UserRecordManager.IsJoinFlooding(userobj, time))
+            {
+                ServerEvents.OnRejected(userobj, RejectionType.JoinFlood);
+                userobj.Expired = true;
+                userobj.LoggedIn = userobj.Ghost;
+                return;
+            }
+
+            UserRecordManager.AddItem(userobj);
+
             if (Bans.IsBanned(userobj))
             {
                 ServerEvents.OnRejected(userobj, RejectionType.Banned);
                 userobj.Expired = true;
+                userobj.LoggedIn = userobj.Ghost;
                 return;
             }
 
@@ -83,17 +110,23 @@ namespace arca4
             {
                 ServerEvents.OnRejected(userobj, RejectionType.Script);
                 userobj.Expired = true;
+                userobj.LoggedIn = userobj.Ghost;
                 return;
             }
 
-            UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Join(userobj));
+            if (!userobj.Ghost)
+                UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Join(userobj));
+
             userobj.LoggedIn = true;
             userobj.SendPacket(AresTCPPackets.LoginAck(userobj));
             userobj.SendPacket(AresTCPPackets.MyFeatures(userobj));
             userobj.SendPacket(AresTCPPackets.TopicFirst());
             UserPool.SendUserList(userobj);
             userobj.SendPacket(AresTCPPackets.OpChange(userobj));
-            ServerEvents.OnMOTD(userobj);
+
+            if (!userobj.FastPing)
+                ServerEvents.OnMOTD(userobj);
+
             ServerEvents.OnJoin(userobj);
         }
 
@@ -114,7 +147,7 @@ namespace arca4
             if (!userobj.Expired)
                 if (!String.IsNullOrEmpty(text))
                 {
-                    UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Public(userobj.Name, text));
+                    UserPool.BroadcastToUnignoredVroom(userobj.Vroom, userobj.Name, AresTCPPackets.Public(userobj.Name, text));
                     ServerEvents.OnTextAfter(userobj, text);
                 }
         }
@@ -133,7 +166,7 @@ namespace arca4
             if (!userobj.Expired)
                 if (!String.IsNullOrEmpty(text))
                 {
-                    UserPool.BroadcastToVroom(userobj.Vroom, AresTCPPackets.Emote(userobj.Name, text));
+                    UserPool.BroadcastToUnignoredVroom(userobj.Vroom, userobj.Name, AresTCPPackets.Emote(userobj.Name, text));
                     ServerEvents.OnEmoteAfter(userobj, text);
                 }
         }

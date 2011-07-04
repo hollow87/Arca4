@@ -185,5 +185,10 @@ namespace arca4
             packet.WriteString(name);
             return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_OFFLINEUSER);
         }
+
+        public static byte[] FastPing()
+        {
+            return new AresTCPPacketWriter().ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_FASTPING);
+        }
     }
 }

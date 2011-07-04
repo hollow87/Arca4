@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace arca4
 {
@@ -40,14 +41,23 @@ namespace arca4
             Users.FindAll(x => x.LoggedIn && x.Vroom == vroom).ForEach(x => x.SendPacket(data));
         }
 
+        public static void BroadcastToUnignoredVroom(ushort vroom, String name, byte[] data)
+        {
+            Users.FindAll(x => x.LoggedIn && x.Vroom == vroom).ForEach(x =>
+            {
+                if (!x.Ignores.Contains(name))
+                    x.SendPacket(data);
+            });
+        }
+
         private static String[] Illegal = new String[]
         {
             "￼", "", "­", "/", "\\", "www."
         };
 
-        public static String PrepareUserName(String name, uint cookie)
+        public static String PrepareUserName(UserObject userobj)
         {
-            String str = name;
+            String str = userobj.OrgName;
 
             foreach (String i in Illegal)
                 str = Regex.Replace(str, Regex.Escape(i), String.Empty, RegexOptions.IgnoreCase);
@@ -57,16 +67,37 @@ namespace arca4
             while (Encoding.UTF8.GetByteCount(str) > 20)
                 str = str.Substring(0, str.Length - 1);
 
-            if (Users.Find(x => x.LoggedIn && (x.Name == str || x.OrgName == str)) != null)
-                return null;
+            if (Encoding.UTF8.GetByteCount(str) < 2)
+                return "anon " + userobj.Cookie;
 
             if (str == Settings.BotName)
                 return null;
 
-            if (Encoding.UTF8.GetByteCount(str) < 2)
-                return "anon " + cookie;
+            if (Users.Find(x => x.LoggedIn && (x.Name == str || x.OrgName == str)) != null) // name in use
+            {
+                UserObject u = Users.Find(x => x.LoggedIn && (x.Name == str || x.OrgName == str) && x.ExternalIP.Equals(userobj.ExternalIP));
+
+                if (u == null)
+                    return null;
+                else
+                {
+                    u.LoggedIn = u.Vroom != 0;
+                    u.Expired = true;
+                    userobj.Ghost = true;
+                    return str;
+                }
+            }
 
             return str;
+        }
+
+        public static void SendFastPings(uint time)
+        {
+            Users.FindAll(x => x.LoggedIn && x.FastPing && (x.LastFastPing + 5) < time).ForEach(x =>
+            {
+                x.LastFastPing = time;
+                x.SendPacket(AresTCPPackets.FastPing());
+            });
         }
 
         public static void SendUserList(UserObject userobj)

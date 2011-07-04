@@ -60,6 +60,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="UserObject.cs" />
     <Compile Include="UserPool.cs" />
+    <Compile Include="UserRecordManager.cs" />
     <Compile Include="ZipLib.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

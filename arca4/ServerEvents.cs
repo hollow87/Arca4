@@ -7,6 +7,11 @@ namespace arca4
 {
     class ServerEvents
     {
+        public static void OnTimer()
+        {
+
+        }
+
         public static bool OnJoinCheck(UserObject userobj)
         {
             return true;

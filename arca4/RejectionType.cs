@@ -9,6 +9,8 @@ namespace arca4
     {
         Script,
         NameInUse,
-        Banned
+        Banned,
+        ClientExcess,
+        JoinFlood
     }
 }

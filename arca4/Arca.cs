@@ -32,9 +32,12 @@ namespace arca4
             this.terminate = false;
 
             UserPool.Init();
+            UserRecordManager.Init();
 
             this.listener = new TcpListener(new IPEndPoint(IPAddress.Any, Settings.Port));
             this.listener.Start();
+
+            uint one_second_timer = UnixTime;
 
             while (true)
             {
@@ -44,6 +47,13 @@ namespace arca4
                 uint time = UnixTime;
                 this.CheckNewUsers(time);
                 this.ServiceCurrentUsers(time);
+                ServerEvents.OnTimer();
+
+                if (one_second_timer < time)
+                {
+                    one_second_timer = time;
+                    UserPool.SendFastPings(time);
+                }
 
                 Thread.Sleep(25);
             }
