@@ -75,7 +75,7 @@ namespace arca4
 
             if (Users.Find(x => x.LoggedIn && (x.Name == str || x.OrgName == str)) != null) // name in use
             {
-                UserObject u = Users.Find(x => x.LoggedIn && (x.Name == str || x.OrgName == str) && x.ExternalIP.Equals(userobj.ExternalIP));
+                UserObject u = Users.Find(x => x.LoggedIn && (x.Name == str || x.OrgName == str) && (x.ExternalIP.Equals(userobj.ExternalIP) || x.Guid.Equals(userobj.Guid)));
 
                 if (u == null)
                     return null;
