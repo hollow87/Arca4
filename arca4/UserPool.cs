@@ -91,6 +91,24 @@ namespace arca4
             return str;
         }
 
+        public static bool CanChangeName(UserObject userobj, String name)
+        {
+            foreach (String i in Illegal)
+                if (Regex.IsMatch(name, Regex.Escape(i), RegexOptions.IgnoreCase))
+                    return false;
+
+            if (Encoding.UTF8.GetByteCount(name) > 20)
+                return false;
+
+            if (Encoding.UTF8.GetByteCount(name) < 2)
+                return false;
+
+            if (name == Settings.BotName)
+                return false;
+
+            return Users.Find(x => (x.LoggedIn && x.ID != userobj.ID) && (x.Name == name || x.OrgName == name)) == null;
+        }
+
         public static void SendFastPings(uint time)
         {
             Users.FindAll(x => x.LoggedIn && x.FastPing && (x.LastFastPing + 5) < time).ForEach(x =>

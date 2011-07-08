@@ -82,5 +82,20 @@ namespace arca4
 
         }
 
+        public static bool OnVroomJoinCheck(UserObject userobj, ushort vroom)
+        {
+            return true;
+        }
+
+        public static void OnVroomJoin(UserObject userobj)
+        {
+
+        }
+
+        public static void OnVroomPart(UserObject userobj)
+        {
+
+        }
+
     }
 }

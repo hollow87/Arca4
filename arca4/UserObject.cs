@@ -156,7 +156,29 @@ namespace arca4
             get { return this.vroom; }
             set
             {
-                this.vroom = value;
+                ushort v = value;
+
+                if (ServerEvents.OnVroomJoinCheck(this, v))
+                {
+                    if (!this.Expired)
+                    {
+                        this.LoggedIn = false;
+                        ServerEvents.OnVroomPart(this);
+                        UserPool.BroadcastToVroom(this.vroom, AresTCPPackets.Part(this));
+
+                        if (!this.Expired)
+                        {
+                            this.vroom = v;
+                            UserPool.BroadcastToVroom(this.Vroom, AresTCPPackets.Join(this));
+                            this.LoggedIn = true;
+                            this.SendPacket(AresTCPPackets.LoginAck(this));
+                            this.SendPacket(AresTCPPackets.TopicFirst());
+                            UserPool.SendUserList(this);
+                            this.SendPacket(AresTCPPackets.OpChange(this));
+                            ServerEvents.OnVroomJoin(this);
+                        }
+                    }
+                }
             }
         }
 
@@ -165,7 +187,20 @@ namespace arca4
             get { return this.name; }
             set
             {
-                this.name = value;
+                String str = value;
+
+                if (UserPool.CanChangeName(this, str))
+                {
+                    this.LoggedIn = false;
+                    UserPool.BroadcastToVroom(this.vroom, AresTCPPackets.Part(this));
+                    this.name = str;
+                    UserPool.BroadcastToVroom(this.Vroom, AresTCPPackets.Join(this));
+                    this.LoggedIn = true;
+                    this.SendPacket(AresTCPPackets.LoginAck(this));
+                    this.SendPacket(AresTCPPackets.TopicFirst());
+                    UserPool.SendUserList(this);
+                    this.SendPacket(AresTCPPackets.OpChange(this));
+                }
             }
         }
 
@@ -174,7 +209,12 @@ namespace arca4
             get { return this.level; }
             set
             {
-                this.level = value;
+                if (value <= 3)
+                {
+                    this.level = value;
+                    UserPool.BroadcastToVroom(this.vroom, AresTCPPackets.UpdateUserStatus(this));
+                    this.SendPacket(AresTCPPackets.OpChange(this));
+                }
             }
         }
 

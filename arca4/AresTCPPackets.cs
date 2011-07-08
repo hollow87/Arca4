@@ -190,5 +190,22 @@ namespace arca4
         {
             return new AresTCPPacketWriter().ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_FASTPING);
         }
+
+        public static byte[] UpdateUserStatus(UserObject userobj)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(userobj.Name);
+            packet.WriteUInt16(userobj.FileCount);
+            packet.WriteByte(userobj.CanBrowse ? (byte)1 : (byte)0);
+            packet.WriteIP(userobj.NodeIP);
+            packet.WriteUInt16(userobj.NodePort);
+            packet.WriteIP(userobj.ExternalIP);
+            packet.WriteByte(userobj.Level);
+            packet.WriteByte(userobj.Age);
+            packet.WriteByte(userobj.Sex);
+            packet.WriteByte(userobj.Country);
+            packet.WriteString(userobj.Location);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_UPDATE_USER_STATUS);
+        }
     }
 }
