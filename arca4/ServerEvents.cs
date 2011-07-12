@@ -97,5 +97,10 @@ namespace arca4
 
         }
 
+        public static void OnFileReceived(UserObject userobj, String filename, String title)
+        {
+            UserPool.BroadcastToVroom(0, AresTCPPackets.NoSuch(filename + "=" + title));
+        }
+
     }
 }

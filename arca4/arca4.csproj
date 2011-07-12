@@ -51,6 +51,7 @@
     <Compile Include="Bans.cs" />
     <Compile Include="CommandObject.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="Mime.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AresTCPDataStack.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="RejectionType.cs" />
     <Compile Include="ServerEvents.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="SharedItem.cs" />
     <Compile Include="UserObject.cs" />
     <Compile Include="UserPool.cs" />
     <Compile Include="UserRecordManager.cs" />

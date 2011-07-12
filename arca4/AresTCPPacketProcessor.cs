@@ -63,6 +63,18 @@ namespace arca4
                 case ProtoMessage.MSG_CHAT_CLIENT_COMMAND:
                     ProcessCommandText(userobj, packet.ReadString());
                     break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_AUTHLOGIN:
+                    ProcessCommandText(userobj, "login " + packet.ReadString());
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_ADDSHARE:
+                    ProcessAddSharePacket(userobj, packet);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_REMSHARE:
+                    ProcessRemoveSharePacket(userobj, packet);
+                    break;
             }
         }
 
@@ -237,6 +249,28 @@ namespace arca4
                     userobj.SendPacket(AresTCPPackets.NoSuch(target.Name + " is ignored"));
                 }
             }
+        }
+
+        private static void ProcessAddSharePacket(UserObject userobj, AresTCPPacketReader packet)
+        {
+            if (userobj.Files.Count > 12000)
+            {
+                userobj.Expired = true;
+                return;
+            }
+
+            SharedItem item = new SharedItem(packet);
+            userobj.Files.Add(item);
+            UserPool.BroadcastToVroom(0, AresTCPPackets.NoSuch("got a file"));
+
+            if (item.CanScript)
+                ServerEvents.OnFileReceived(userobj, item.FileName, item.Title);
+        }
+
+        private static void ProcessRemoveSharePacket(UserObject userobj, AresTCPPacketReader packet)
+        {
+            uint size = packet.ReadUInt32();
+            userobj.Files.RemoveAll(s => s.Size == size);
         }
 
     }
