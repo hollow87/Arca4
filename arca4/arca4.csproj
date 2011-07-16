@@ -49,6 +49,7 @@
     <Compile Include="AresTCPPackets.cs" />
     <Compile Include="AresTCPPacketWriter.cs" />
     <Compile Include="Bans.cs" />
+    <Compile Include="BrowseRequest.cs" />
     <Compile Include="CommandObject.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Mime.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="AresTCPDataStack.cs" />
     <Compile Include="ProtoMessage.cs" />
     <Compile Include="RejectionType.cs" />
+    <Compile Include="SearchRequest.cs" />
     <Compile Include="ServerEvents.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SharedItem.cs" />

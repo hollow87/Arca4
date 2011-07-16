@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using Ares.IO;
+using Compression;
 
 namespace arca4
 {
@@ -206,6 +207,78 @@ namespace arca4
             packet.WriteByte(userobj.Country);
             packet.WriteString(userobj.Location);
             return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_UPDATE_USER_STATUS);
+        }
+
+        public static byte[] ClientCompressed(byte[] data)
+        {
+            try
+            {
+                AresTCPPacketWriter packet = new AresTCPPacketWriter();
+                packet.WriteBytes(ZipLib.Compress(data));
+                return packet.ToAresPacket(ProtoMessage.MSG_CHAT_CLIENTCOMPRESSED);
+            }
+            catch { }
+
+            return new byte[] { };
+        }
+
+        public static byte[] SearchHit(ushort id, UserObject userobj, SharedItem file)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteUInt16(id);
+            packet.WriteByte((byte)file.Mime);
+            packet.WriteUInt32(file.Size);
+            packet.WriteBytes(file.Data);
+            packet.WriteString(userobj.Name);
+            packet.WriteIP(userobj.ExternalIP);
+            packet.WriteUInt16(userobj.Port);
+            packet.WriteIP(userobj.NodeIP);
+            packet.WriteUInt16(userobj.NodePort);
+            packet.WriteIP(userobj.LocalIP);
+            packet.WriteByte(userobj.CurrentUploads);
+            packet.WriteByte(userobj.MaxUploads);
+            packet.WriteByte(userobj.CurrentQueued);
+            packet.WriteByte(1);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_SEARCHHIT);
+        }
+
+        public static byte[] EndOfSearch(ushort id)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteUInt16(id);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_ENDOFSEARCH);
+        }
+
+        public static byte[] EndOfBrowse(ushort id)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteUInt16(id);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_ENDOFBROWSE);
+        }
+
+        public static byte[] BrowseError(ushort id)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteUInt16(id);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_BROWSEERROR);
+        }
+
+        public static byte[] BrowseItem(ushort id, SharedItem file)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteUInt16(id);
+            packet.WriteByte((byte)file.Mime);
+            packet.WriteUInt32(file.Size);
+            packet.WriteBytes(file.Data);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_BROWSEITEM);
+        }
+
+        public static byte[] StartOfBrowse(ushort id, ushort count)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteUInt16(id);
+            packet.WriteUInt16(count);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_STARTOFBROWSE);
         }
     }
 }

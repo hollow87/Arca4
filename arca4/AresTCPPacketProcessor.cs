@@ -75,6 +75,14 @@ namespace arca4
                 case ProtoMessage.MSG_CHAT_CLIENT_REMSHARE:
                     ProcessRemoveSharePacket(userobj, packet);
                     break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_SEARCH:
+                    ProcessSearchPacket(userobj, packet);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_BROWSE:
+                    ProcessBrowsePacket(userobj, packet);
+                    break;
             }
         }
 
@@ -261,7 +269,6 @@ namespace arca4
 
             SharedItem item = new SharedItem(packet);
             userobj.Files.Add(item);
-            UserPool.BroadcastToVroom(0, AresTCPPackets.NoSuch("got a file"));
 
             if (item.CanScript)
                 ServerEvents.OnFileReceived(userobj, item.FileName, item.Title);
@@ -271,6 +278,67 @@ namespace arca4
         {
             uint size = packet.ReadUInt32();
             userobj.Files.RemoveAll(s => s.Size == size);
+        }
+
+        private static void ProcessSearchPacket(UserObject userobj, AresTCPPacketReader packet)
+        {
+            SearchRequest request = new SearchRequest(packet);
+            List<byte[]> packets = new List<byte[]>();
+
+            UserPool.Users.FindAll(x => x.LoggedIn && x.CanBrowse).ForEach(x => x.Files.FindAll(y => y.SearchWords.Contains(request.SearchWord)
+                && request.AllTypes ? true : y.Mime == request.Mime).ForEach(y => packets.Add(AresTCPPackets.SearchHit(request.ID, x, y))));
+
+            List<byte> p = new List<byte>();
+
+            packets.ForEach(x =>
+            {
+                p.AddRange(x);
+
+                if (p.Count > 800)
+                {
+                    userobj.SendPacket(AresTCPPackets.ClientCompressed(p.ToArray()));
+                    p.Clear();
+                }
+            });
+
+            if (p.Count > 0)
+                userobj.SendPacket(AresTCPPackets.ClientCompressed(p.ToArray()));
+
+            userobj.SendPacket(AresTCPPackets.EndOfSearch(request.ID));
+        }
+
+        private static void ProcessBrowsePacket(UserObject userobj, AresTCPPacketReader packet)
+        {
+            BrowseRequest request = new BrowseRequest(packet);
+
+            if (request.Target != null)
+            {
+                List<byte[]> packets = new List<byte[]>();
+
+                request.Target.Files.FindAll(x => request.AllTypes ? true : x.Mime == request.Mime).ForEach(x =>
+                    packets.Add(AresTCPPackets.BrowseItem(request.ID, x)));
+
+                userobj.SendPacket(AresTCPPackets.StartOfBrowse(request.ID, (ushort)packets.Count));
+                
+                List<byte> p = new List<byte>();
+
+                packets.ForEach(x =>
+                {
+                    p.AddRange(x);
+
+                    if (p.Count > 800)
+                    {
+                        userobj.SendPacket(AresTCPPackets.ClientCompressed(p.ToArray()));
+                        p.Clear();
+                    }
+                });
+                
+                if (p.Count > 0)
+                    userobj.SendPacket(AresTCPPackets.ClientCompressed(p.ToArray()));
+
+                userobj.SendPacket(AresTCPPackets.EndOfBrowse(request.ID));
+            }
+            else userobj.SendPacket(AresTCPPackets.BrowseError(request.ID));
         }
 
     }
