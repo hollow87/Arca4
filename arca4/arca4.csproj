@@ -51,6 +51,7 @@
     <Compile Include="Bans.cs" />
     <Compile Include="BrowseRequest.cs" />
     <Compile Include="CommandObject.cs" />
+    <Compile Include="DebugLog.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Mime.cs" />
     <Compile Include="Program.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="ServerEvents.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SharedItem.cs" />
+    <Compile Include="UserAccounts.cs" />
     <Compile Include="UserObject.cs" />
     <Compile Include="UserPool.cs" />
     <Compile Include="UserRecordManager.cs" />

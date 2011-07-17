@@ -102,5 +102,22 @@ namespace arca4
             
         }
 
+        public static void OnHelp(UserObject userobj)
+        {
+            userobj.SendPacket(AresTCPPackets.NoSuch("#register <password>"));
+            userobj.SendPacket(AresTCPPackets.NoSuch("#unregister <password>"));
+            userobj.SendPacket(AresTCPPackets.NoSuch("#login <password>"));
+        }
+
+        public static void OnAdminLevelChanged(UserObject userobj)
+        {
+
+        }
+
+        public static void OnInvalidPassword(UserObject userobj)
+        {
+            
+        }
+
     }
 }

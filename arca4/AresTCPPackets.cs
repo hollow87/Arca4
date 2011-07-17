@@ -130,6 +130,11 @@ namespace arca4
             return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_PERSONAL_MESSAGE);
         }
 
+        public static byte[] NoSuch()
+        {
+            return NoSuch(String.Empty);
+        }
+
         public static byte[] NoSuch(String text)
         {
             AresTCPPacketWriter packet = new AresTCPPacketWriter();

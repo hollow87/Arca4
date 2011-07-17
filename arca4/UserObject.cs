@@ -35,6 +35,7 @@ namespace arca4
         public bool Ghost { get; set; }
         public uint LastFastPing { get; set; }
         public List<SharedItem> Files { get; private set; }
+        public bool Registered { get; set; }
         
 
         private Socket sock;
@@ -59,6 +60,7 @@ namespace arca4
             this.Expired = false;
             this.FastPing = false;
             this.Ghost = false;
+            this.Registered = false;
             this.Cookie = now;
             this.LastFastPing = now;
 
@@ -103,13 +105,13 @@ namespace arca4
 
                     if (!this.Expired)
                         AresTCPPacketProcessor.Evaluate(this, msg, new AresTCPPacketReader(buf), now);
-                    else
-                    {
-                        Console.WriteLine("end of session " + this.ExternalIP + ": " + msg);
-                        break;
-                    }
+                    else break;
                 }
-                catch { this.Expired = true; }
+                catch (Exception e)
+                {
+                    DebugLog.WriteLine(this.ExternalIP + " killed: " + e.Message);
+                    this.Expired = true;
+                }
             }
         }
 

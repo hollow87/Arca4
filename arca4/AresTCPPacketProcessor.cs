@@ -102,10 +102,12 @@ namespace arca4
                     break;
 
                 case ProtoMessage.MSG_CHAT_CLIENT_AUTOLOGIN:
-                    ProcessAutoLoginPacket(userobj, packet);
+                    UserAccounts.Login(userobj, packet.ReadBytes());
                     break;
             }
         }
+
+        private static String[] built_in_commands = { "login", "register", "unregister" };
 
         private static void ProcessLogin(UserObject userobj, AresTCPPacketReader packet, uint time)
         {
@@ -179,8 +181,9 @@ namespace arca4
             {
                 ProcessCommandText(userobj, text.Substring(1));
 
-                if (text.Substring(1).StartsWith("login"))
-                    return;
+                foreach (String str in built_in_commands)
+                    if (text.Substring(1).StartsWith(str))
+                        return;
             }
 
             text = ServerEvents.OnTextBefore(userobj, text);
@@ -195,8 +198,19 @@ namespace arca4
 
         private static void ProcessCommandText(UserObject userobj, String text)
         {
-            CommandObject cmd = Helpers.TextToCommand(userobj, text);
-            ServerEvents.OnCommand(userobj, text, cmd.target, cmd.args);
+            if (text == "help")
+                ServerEvents.OnHelp(userobj);
+            else if (text.StartsWith("register "))
+                UserAccounts.Register(userobj, text.Substring(9));
+            else if (text.StartsWith("unregister "))
+                UserAccounts.Unregister(userobj, text.Substring(11));
+            else if (text.StartsWith("login "))
+                UserAccounts.Login(userobj, text.Substring(6));
+            else
+            {
+                CommandObject cmd = Helpers.TextToCommand(userobj, text);
+                ServerEvents.OnCommand(userobj, text, cmd.target, cmd.args);
+            }
         }
 
         private static void ProcessEmoteText(UserObject userobj, AresTCPPacketReader packet)
@@ -223,8 +237,9 @@ namespace arca4
                 {
                     ProcessCommandText(userobj, text.Substring(1));
 
-                    if (text.Substring(1).StartsWith("login"))
-                        text = String.Empty;
+                    foreach (String str in built_in_commands)
+                        if (text.Substring(1).StartsWith(str))
+                            text = String.Empty;
                 }
 
                 if (!String.IsNullOrEmpty(text))
@@ -398,13 +413,5 @@ namespace arca4
 
             userobj.SendPacket(AresTCPPackets.SuperNodes(endpoints.ToArray()));
         }
-
-        private static void ProcessAutoLoginPacket(UserObject userobj, AresTCPPacketReader packet)
-        {
-
-        }
-
-
-
     }
 }

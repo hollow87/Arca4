@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 
 namespace arca4
 {
@@ -77,5 +78,27 @@ namespace arca4
             return cmd;
         }
 
+        public static bool IsLocalHost(IPAddress ip)
+        {
+            byte[] buff = ip.GetAddressBytes();
+
+            switch (buff[0])
+            {
+                case 192:
+                    if (buff[1] == 168)
+                        return true;
+                    break;
+
+                case 127:
+                    return true;
+
+                case 10:
+                    if (buff[1] == 0)
+                        return true;
+                    break;
+            }
+
+            return ip.Equals(Settings.ExternalIP);
+        }
     }
 }

@@ -13,6 +13,11 @@ namespace arca4
             get { return IPAddress.Any; }
         }
 
+        public static IPAddress ExternalIP
+        {
+            get { return IPAddress.Loopback; }
+        }
+
         public static ushort Port
         {
             get { return 22454; }
