@@ -109,7 +109,7 @@ namespace arca4
             userobj.SendPacket(AresTCPPackets.NoSuch("#login <password>"));
         }
 
-        public static void OnAdminLevelChanged(UserObject userobj)
+        public static void OnLoginGranted(UserObject userobj)
         {
 
         }

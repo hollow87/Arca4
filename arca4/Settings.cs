@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
+using System.Net.Sockets;
 
 namespace arca4
 {
     class Settings
     {
+        private static IPAddress localip;
+
         public static IPAddress UDPAddress
         {
             get { return IPAddress.Any; }
@@ -16,6 +19,27 @@ namespace arca4
         public static IPAddress ExternalIP
         {
             get { return IPAddress.Loopback; }
+        }
+
+        public static IPAddress LocalIP
+        {
+            get
+            {
+                if (localip == null)
+                {
+                    foreach (IPAddress ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+                        if (ip.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            localip = ip;
+                            break;
+                        }
+
+                    if (localip == null)
+                        localip = IPAddress.Loopback;
+                }
+
+                return localip;
+            }
         }
 
         public static ushort Port
