@@ -11,5 +11,10 @@ namespace arca4
         {
             return false;
         }
+
+        public static void AddBan(UserObject userobj)
+        {
+
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using Ares.IO;
 
 namespace arca4
@@ -82,6 +83,26 @@ namespace arca4
 
                 case ProtoMessage.MSG_CHAT_CLIENT_BROWSE:
                     ProcessBrowsePacket(userobj, packet);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_AUTHREGISTER:
+                    ProcessCommandText(userobj, "register " + packet.ReadString());
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_DIRCHATPUSH:
+                    ProcessDirectChatPacket(userobj, packet);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_DUMMY:
+                    ProcessDummyPacket(userobj);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_SEND_SUPERNODES:
+                    ProcessSuperNodesPacket(userobj);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_AUTOLOGIN:
+                    ProcessAutoLoginPacket(userobj, packet);
                     break;
             }
         }
@@ -340,6 +361,50 @@ namespace arca4
             }
             else userobj.SendPacket(AresTCPPackets.BrowseError(request.ID));
         }
+
+        private static void ProcessDirectChatPacket(UserObject userobj, AresTCPPacketReader packet)
+        {
+            String name = packet.ReadString();
+            Guid guid = packet.ReadGuid();
+            UserObject target = UserPool.Users.Find(x => x.Name == name);
+
+            if (target == null)
+                userobj.SendPacket(new byte[] { 1, 0, (byte)ProtoMessage.MSG_CHAT_CLIENT_DIRCHATPUSH, 1 });
+            else if (target.Ignores.Contains(userobj.Name))
+                userobj.SendPacket(new byte[] { 1, 0, (byte)ProtoMessage.MSG_CHAT_CLIENT_DIRCHATPUSH, 2 });
+            else
+            {
+                userobj.SendPacket(new byte[] { 1, 0, (byte)ProtoMessage.MSG_CHAT_CLIENT_DIRCHATPUSH, 0 });
+                target.SendPacket(AresTCPPackets.DirectChatPush(userobj, guid));
+            }
+        }
+
+        private static void ProcessDummyPacket(UserObject userobj)
+        {
+            Bans.AddBan(userobj);
+            userobj.Expired = true;
+        }
+
+        private static void ProcessSuperNodesPacket(UserObject userobj)
+        {
+            List<IPEndPoint> endpoints = new List<IPEndPoint>();
+            
+            UserPool.Users.FindAll(x => x.LoggedIn).ForEach(x =>
+            {
+                if (!x.NodeIP.Equals(IPAddress.Parse("0.0.0.0")))
+                    if (x.NodePort > 0)
+                        endpoints.Add(new IPEndPoint(x.NodeIP, x.NodePort));
+            });
+
+            userobj.SendPacket(AresTCPPackets.SuperNodes(endpoints.ToArray()));
+        }
+
+        private static void ProcessAutoLoginPacket(UserObject userobj, AresTCPPacketReader packet)
+        {
+
+        }
+
+
 
     }
 }

@@ -280,5 +280,29 @@ namespace arca4
             packet.WriteUInt16(count);
             return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_STARTOFBROWSE);
         }
+
+        public static byte[] DirectChatPush(UserObject userobj, Guid guid)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(userobj.Name);
+            packet.WriteIP(userobj.ExternalIP);
+            packet.WriteUInt16(userobj.Port);
+            packet.WriteIP(userobj.LocalIP);
+            packet.WriteBytes(guid.ToByteArray());
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_CLIENT_DIRCHATPUSH);
+        }
+
+        public static byte[] SuperNodes(IPEndPoint[] nodes)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+
+            foreach (IPEndPoint ep in nodes)
+            {
+                packet.WriteIP(ep.Address.GetAddressBytes());
+                packet.WriteUInt16((ushort)ep.Port);
+            }
+
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_HERE_SUPERNODES);
+        }
     }
 }
