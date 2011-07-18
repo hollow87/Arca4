@@ -33,6 +33,8 @@ namespace arca4
 
             UserPool.Init();
             UserRecordManager.Init();
+            Muzzles.LoadRecords();
+            Bans.LoadRecords();
 
             this.listener = new TcpListener(new IPEndPoint(IPAddress.Any, Settings.Port));
             this.listener.Start();

@@ -20,6 +20,11 @@ namespace arca4
 
             if (key == null)
             {
+                userobj.Registered = false;
+
+                if (userobj.Level != 0)
+                    userobj.Level = 0;
+
                 ServerEvents.OnInvalidPassword(userobj);
                 DebugLog.WriteLine(userobj.Name + " invalid login attempt [" + userobj.ExternalIP + "]");
                 return;
@@ -33,6 +38,11 @@ namespace arca4
             if (key.GetValue(value_name) == null)
             {
                 key.Close();
+                userobj.Registered = false;
+
+                if (userobj.Level != 0)
+                    userobj.Level = 0;
+
                 ServerEvents.OnInvalidPassword(userobj);
                 DebugLog.WriteLine(userobj.Name + " invalid login attempt [" + userobj.ExternalIP + "]");
                 return;
@@ -52,11 +62,18 @@ namespace arca4
                 if (userobj.Level != target_level)
                     userobj.Level = target_level;
 
+                userobj.Registered = true;
+                userobj.SendPacket(AresTCPPackets.NoSuch("You are identified"));
                 ServerEvents.OnLoginGranted(userobj);
                 DebugLog.WriteLine(userobj.Name + " logged in using " + owner + "'s password [" + userobj.ExternalIP + "]");
             }
             else
             {
+                userobj.Registered = false;
+
+                if (userobj.Level != 0)
+                    userobj.Level = 0;
+
                 ServerEvents.OnInvalidPassword(userobj);
                 DebugLog.WriteLine(userobj.Name + " invalid login attempt [" + userobj.ExternalIP + "]");
             }
@@ -71,8 +88,17 @@ namespace arca4
 
             if (key == null)
             {
-                ServerEvents.OnInvalidPassword(userobj);
-                DebugLog.WriteLine(userobj.Name + " invalid login attempt [" + userobj.ExternalIP + "]");
+                userobj.Registered = false;
+
+                if (userobj.Level != 0)
+                    userobj.Level = 0;
+
+                if (userobj.SHALoginAttempt)
+                {
+                    ServerEvents.OnInvalidPassword(userobj);
+                    DebugLog.WriteLine(userobj.Name + " invalid login attempt [" + userobj.ExternalIP + "]");
+                }
+                else userobj.SHALoginAttempt = true;
                 return;
             }
 
@@ -84,8 +110,17 @@ namespace arca4
             if (key.GetValue(value_name) == null)
             {
                 key.Close();
-                ServerEvents.OnInvalidPassword(userobj);
-                DebugLog.WriteLine(userobj.Name + " invalid login attempt [" + userobj.ExternalIP + "]");
+                userobj.Registered = false;
+
+                if (userobj.Level != 0)
+                    userobj.Level = 0;
+
+                if (userobj.SHALoginAttempt)
+                {
+                    ServerEvents.OnInvalidPassword(userobj);
+                    DebugLog.WriteLine(userobj.Name + " invalid login attempt [" + userobj.ExternalIP + "]");
+                }
+                else userobj.SHALoginAttempt = true;
                 return;
             }
 
@@ -111,15 +146,40 @@ namespace arca4
                     if (userobj.Level != target_level)
                         userobj.Level = target_level;
 
-                    ServerEvents.OnLoginGranted(userobj);
+                    userobj.Registered = true;
                     userobj.SendPacket(AresTCPPackets.NoSuch("You are identified"));
+                    userobj.SHALoginAttempt = true;
+                    ServerEvents.OnLoginGranted(userobj);
                     DebugLog.WriteLine(userobj.Name + " logged in using " + owner + "'s password [" + userobj.ExternalIP + "]");
                     return;
                 }
             }
 
-            ServerEvents.OnInvalidPassword(userobj);
-            DebugLog.WriteLine(userobj.Name + " invalid login attempt [" + userobj.ExternalIP + "]");
+            userobj.Registered = false;
+
+            if (userobj.Level != 0)
+                userobj.Level = 0;
+
+            if (userobj.SHALoginAttempt)
+            {
+                ServerEvents.OnInvalidPassword(userobj);
+                DebugLog.WriteLine(userobj.Name + " invalid login attempt [" + userobj.ExternalIP + "]");
+            }
+            else userobj.SHALoginAttempt = true;
+        }
+
+        public static void UpdateAdminLevel(UserObject userobj)
+        {
+            RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\arca4\\accounts", true);
+            String value_name = String.Empty;
+
+            foreach (byte b in userobj.Guid.ToByteArray())
+                value_name += String.Format("{0:X2}", b);
+
+            byte[] record = (byte[])key.GetValue(value_name);
+            record[20] = userobj.Level;
+            key.SetValue(value_name, record, RegistryValueKind.Binary);
+            key.Close();
         }
 
         public static void Register(UserObject userobj, String password)

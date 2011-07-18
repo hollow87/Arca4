@@ -38,6 +38,7 @@ namespace arca4
         public List<SharedItem> Files { get; private set; }
         public bool Registered { get; set; }
         public bool Muzzled { get; set; }
+        public bool SHALoginAttempt { get; set; }
         
 
         private Socket sock;

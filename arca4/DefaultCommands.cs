@@ -43,12 +43,27 @@ namespace arca4
         {
             if (userobj.Level < Settings.BanLevel)
                 return;
+
+            int index;
+            String name = null;
+
+            if (int.TryParse(args, out index))
+                name = Bans.RemoveBan(index);
+            else if (args.Length > 2)
+                if ((args.StartsWith("\"") && args.EndsWith("\"")) ||
+                    (args.StartsWith("'") && args.EndsWith("'")))
+                    name = Bans.RemoveBan(args.Substring(1, args.Length - 2));
+
+            if (name != null)
+                DebugLog.WriteLine(name + " unbanned by " + userobj.Name);
         }
 
         public static void ListBans(UserObject userobj)
         {
             if (userobj.Level < Settings.BanLevel)
                 return;
+
+            Bans.ListBans(userobj);
         }
 
         public static void Muzzle(UserObject userobj, UserObject target)
@@ -59,7 +74,6 @@ namespace arca4
             if (target.Level < userobj.Level && !target.Muzzled)
             {
                 target.Muzzled = true;
-                target.SendPacket(AresTCPPackets.NoSuch("You are muzzled"));
                 Muzzles.AddMuzzle(target);
                 DebugLog.WriteLine(target.Name + " muzzled by " + userobj.Name);
             }
@@ -73,7 +87,6 @@ namespace arca4
             if (target.Muzzled)
             {
                 target.Muzzled = false;
-                target.SendPacket(AresTCPPackets.NoSuch("You are unmuzzled"));
                 Muzzles.RemoveMuzzle(target);
                 DebugLog.WriteLine(target.Name + " unmuzzled by " + userobj.Name);
             }
@@ -97,11 +110,19 @@ namespace arca4
                 return;
 
             byte b = 0;
-
+            
             if (byte.TryParse(args, out b))
             {
+                byte old_level = target.Level;
                 target.Level = b;
+
+                if (target.Registered)
+                    UserAccounts.UpdateAdminLevel(target);
+
                 DebugLog.WriteLine(target.Name + " set admin level " + b + " by " + userobj.Name);
+
+                if (b > old_level)
+                    ServerEvents.OnLoginGranted(target);
             }
         }
 
