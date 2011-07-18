@@ -5,6 +5,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Net;
 using Microsoft.Win32;
+using Ares.Protocol;
 
 namespace arca4
 {
@@ -111,6 +112,7 @@ namespace arca4
                         userobj.Level = target_level;
 
                     ServerEvents.OnLoginGranted(userobj);
+                    userobj.SendPacket(AresTCPPackets.NoSuch("You are identified"));
                     DebugLog.WriteLine(userobj.Name + " logged in using " + owner + "'s password [" + userobj.ExternalIP + "]");
                     return;
                 }

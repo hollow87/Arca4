@@ -5,8 +5,9 @@ using System.Text;
 using System.Net;
 using Ares.IO;
 using Compression;
+using arca4;
 
-namespace arca4
+namespace Ares.Protocol
 {
     class AresTCPPackets
     {

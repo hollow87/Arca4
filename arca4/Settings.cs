@@ -71,5 +71,25 @@ namespace arca4
         {
             get { return "Arca4 project test room"; }
         }
+
+        public static byte ScriptLevel
+        {
+            get { return 3; }
+        }
+
+        public static byte BanLevel
+        {
+            get { return 2; }
+        }
+
+        public static byte KillLevel
+        {
+            get { return 1; }
+        }
+
+        public static byte MuzzleLevel
+        {
+            get { return 1; }
+        }
     }
 }

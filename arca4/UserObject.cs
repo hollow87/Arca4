@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using Ares.IO;
+using Ares.Protocol;
 
 namespace arca4
 {
@@ -36,6 +37,7 @@ namespace arca4
         public uint LastFastPing { get; set; }
         public List<SharedItem> Files { get; private set; }
         public bool Registered { get; set; }
+        public bool Muzzled { get; set; }
         
 
         private Socket sock;
@@ -98,10 +100,12 @@ namespace arca4
 
             while (this.stack.Available)
             {
+                ProtoMessage msg = ProtoMessage.UNKNOWN;
+
                 try
                 {
                     byte[] buf = this.stack.NextPacket;
-                    ProtoMessage msg = this.stack.Msg;
+                    msg = this.stack.Msg;
 
                     if (!this.Expired)
                         AresTCPPacketProcessor.Evaluate(this, msg, new AresTCPPacketReader(buf), now);
@@ -109,7 +113,7 @@ namespace arca4
                 }
                 catch (Exception e)
                 {
-                    DebugLog.WriteLine(this.ExternalIP + " killed: " + e.Message);
+                    DebugLog.WriteLine(this.ExternalIP + " malicious packet: " + msg + " " + e.Message);
                     this.Expired = true;
                 }
             }
@@ -286,6 +290,7 @@ namespace arca4
             this.Sex = packet.ReadByte();
             this.Country = packet.ReadByte();
             this.Location = packet.ReadString();
+            this.Muzzled = Muzzles.IsMuzzled(this);
         }
 
         public void Pinged(uint now)

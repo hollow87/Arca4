@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using Ares.IO;
+using arca4;
 
-namespace arca4
+namespace Ares.Protocol
 {
     class AresTCPPacketProcessor
     {

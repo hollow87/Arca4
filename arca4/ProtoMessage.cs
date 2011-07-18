@@ -206,6 +206,8 @@
         /// <summary>protocol message</summary>
         MSG_CHAT_SERVER_CUSTOM_EMOTE_DELETE = 222,
         /// <summary>protocol message</summary>
-        MSG_CHAT_CLIENT_CUSTOM_EMOTE_DELETE = 222
+        MSG_CHAT_CLIENT_CUSTOM_EMOTE_DELETE = 222,
+        /// <summary>protocol message</summary>
+        UNKNOWN = 255
     }
 }

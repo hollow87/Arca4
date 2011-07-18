@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Net;
+using Ares.Protocol;
 
 namespace arca4
 {
@@ -34,6 +35,11 @@ namespace arca4
 
             if (Users.Count > 1)
                 Users.Sort((x, y) => x.ID.CompareTo(y.ID));
+        }
+
+        public static void Broadcast(byte[] data)
+        {
+            Users.FindAll(x => x.LoggedIn).ForEach(x => x.SendPacket(data));
         }
 
         public static void BroadcastToVroom(ushort vroom, byte[] data)
