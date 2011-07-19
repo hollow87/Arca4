@@ -184,7 +184,7 @@ namespace arca4
 
         public static void Register(UserObject userobj, String password)
         {
-            if (password.Length < 2)
+            if (password.Length < 2 || !Settings.CanRegister)
                 return;
 
             RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\arca4");

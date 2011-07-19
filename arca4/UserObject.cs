@@ -59,11 +59,6 @@ namespace arca4
             this.timestamp = now;
             this.ExternalIP = ((IPEndPoint)this.sock.RemoteEndPoint).Address;
             UserPool.SetID(this);
-            this.LoggedIn = false;
-            this.Expired = false;
-            this.FastPing = false;
-            this.Ghost = false;
-            this.Registered = false;
             this.Cookie = now;
             this.LastFastPing = now;
 

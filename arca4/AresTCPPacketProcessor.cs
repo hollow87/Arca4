@@ -105,6 +105,14 @@ namespace Ares.Protocol
                 case ProtoMessage.MSG_CHAT_CLIENT_AUTOLOGIN:
                     UserAccounts.Login(userobj, packet.ReadBytes());
                     break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_CUSTOM_DATA:
+                    ProcessCustomData(userobj, packet);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_CUSTOM_DATA_ALL:
+                    ProcessCustomDataAll(userobj, packet);
+                    break;
             }
         }
 
@@ -322,8 +330,15 @@ namespace Ares.Protocol
             SearchRequest request = new SearchRequest(packet);
             List<byte[]> packets = new List<byte[]>();
 
-            UserPool.Users.FindAll(x => x.LoggedIn && x.CanBrowse).ForEach(x => x.Files.FindAll(y => y.SearchWords.Contains(request.SearchWord)
-                && request.AllTypes ? true : y.Mime == request.Mime).ForEach(y => packets.Add(AresTCPPackets.SearchHit(request.ID, x, y))));
+            UserPool.Users.ForEach(x =>
+            {
+                if (x.LoggedIn && x.CanBrowse)
+                    x.Files.ForEach(y =>
+                    {
+                        if (y.SearchWords.Contains(request.SearchWord) && (request.AllTypes || y.Mime == request.Mime))
+                            packets.Add(AresTCPPackets.SearchHit(request.ID, x, y));
+                    });
+            });
 
             List<byte> p = new List<byte>();
 
@@ -352,8 +367,11 @@ namespace Ares.Protocol
             {
                 List<byte[]> packets = new List<byte[]>();
 
-                request.Target.Files.FindAll(x => request.AllTypes ? true : x.Mime == request.Mime).ForEach(x =>
-                    packets.Add(AresTCPPackets.BrowseItem(request.ID, x)));
+                request.Target.Files.ForEach(x =>
+                {
+                    if (request.AllTypes || x.Mime == request.Mime)
+                        packets.Add(AresTCPPackets.BrowseItem(request.ID, x));
+                });
 
                 userobj.SendPacket(AresTCPPackets.StartOfBrowse(request.ID, (ushort)packets.Count));
                 
@@ -405,14 +423,34 @@ namespace Ares.Protocol
         {
             List<IPEndPoint> endpoints = new List<IPEndPoint>();
             
-            UserPool.Users.FindAll(x => x.LoggedIn).ForEach(x =>
+            UserPool.Users.ForEach(x =>
             {
-                if (!x.NodeIP.Equals(IPAddress.Parse("0.0.0.0")))
-                    if (x.NodePort > 0)
-                        endpoints.Add(new IPEndPoint(x.NodeIP, x.NodePort));
+                if (x.LoggedIn)
+                    if (!x.NodeIP.Equals(IPAddress.Parse("0.0.0.0")))
+                        if (x.NodePort > 0)
+                            endpoints.Add(new IPEndPoint(x.NodeIP, x.NodePort));
             });
 
             userobj.SendPacket(AresTCPPackets.SuperNodes(endpoints.ToArray()));
+        }
+
+        private static void ProcessCustomData(UserObject userobj, AresTCPPacketReader packet)
+        {
+            String ident = packet.ReadString();
+            String name = packet.ReadString();
+            byte[] data = packet.ReadBytes();
+            UserObject target = UserPool.Users.Find(x => x.LoggedIn && x.Name == name);
+
+            if (target != null)
+                target.SendPacket(CustomPackets.CustomData(userobj.Name, ident, data));
+        }
+
+        private static void ProcessCustomDataAll(UserObject userobj, AresTCPPacketReader packet)
+        {
+            String ident = packet.ReadString();
+            byte[] data = packet.ReadBytes();
+            data = CustomPackets.CustomData(userobj.Name, ident, data);
+            UserPool.Users.ForEach(x => { if (x.LoggedIn && x.ID != userobj.ID) x.SendPacket(data); });
         }
     }
 }

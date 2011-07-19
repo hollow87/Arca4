@@ -35,10 +35,13 @@ namespace arca4
 
         public static void AddMuzzle(UserObject userobj)
         {
-            UserPool.Users.FindAll(x => x.LoggedIn && (x.ExternalIP.Equals(userobj.ExternalIP) || x.Guid.Equals(userobj.Guid))).ForEach(x =>
+            UserPool.Users.ForEach(x =>
             {
-                x.SendPacket(AresTCPPackets.NoSuch("You are muzzled"));
-                x.Muzzled = true;
+                if (x.LoggedIn && (x.ExternalIP.Equals(userobj.ExternalIP) || x.Guid.Equals(userobj.Guid)))
+                {
+                    x.SendPacket(AresTCPPackets.NoSuch("You are muzzled"));
+                    x.Muzzled = true;
+                }
             });
 
             Items.Add(new MuzzledItem(userobj));
@@ -46,10 +49,13 @@ namespace arca4
 
         public static void RemoveMuzzle(UserObject userobj)
         {
-            UserPool.Users.FindAll(x => x.LoggedIn && (x.ExternalIP.Equals(userobj.ExternalIP) || x.Guid.Equals(userobj.Guid))).ForEach(x =>
+            UserPool.Users.ForEach(x =>
             {
-                x.SendPacket(AresTCPPackets.NoSuch("You are unmuzzled"));
-                x.Muzzled = false;
+                if (x.LoggedIn && (x.ExternalIP.Equals(userobj.ExternalIP) || x.Guid.Equals(userobj.Guid)))
+                {
+                    x.SendPacket(AresTCPPackets.NoSuch("You are unmuzzled"));
+                    x.Muzzled = false;
+                }
             });
 
             Items.RemoveAll(x => x.Guid.Equals(userobj.Guid) || x.ExternalIP.Equals(userobj.ExternalIP));

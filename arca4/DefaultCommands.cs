@@ -128,8 +128,7 @@ namespace arca4
 
         public static void Info(UserObject userobj)
         {
-            UserPool.Users.FindAll(x => x.LoggedIn).ForEach(x =>
-                userobj.SendPacket(AresTCPPackets.NoSuch(x.ID + " - " + x.Name + " -> " + x.Vroom)));
+            UserPool.Users.ForEach(x => { if (x.LoggedIn) userobj.SendPacket(AresTCPPackets.NoSuch(x.ID + " - " + x.Name + " -> " + x.Vroom)); });
         }
     }
 }

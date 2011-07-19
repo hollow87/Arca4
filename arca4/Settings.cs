@@ -235,6 +235,23 @@ namespace arca4
             }
         }
 
+        public static bool CanRegister
+        {
+            get
+            {
+                object result = GetValue("accepting_registration");
+
+                if (result == null)
+                {
+                    result = (int)1;
+                    SetValue<int>("accepting_registration", (int)result, RegistryValueKind.DWord);
+                }
+
+                int i = (int)result;
+                return i == 1;
+            }
+        }
+
         private static object GetValue(String name)
         {
             RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\arca4");

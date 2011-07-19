@@ -39,20 +39,21 @@ namespace arca4
 
         public static void Broadcast(byte[] data)
         {
-            Users.FindAll(x => x.LoggedIn).ForEach(x => x.SendPacket(data));
+            Users.ForEach(x => { if (x.LoggedIn) x.SendPacket(data); });
         }
 
         public static void BroadcastToVroom(ushort vroom, byte[] data)
         {
-            Users.FindAll(x => x.LoggedIn && x.Vroom == vroom).ForEach(x => x.SendPacket(data));
+            Users.ForEach(x => { if (x.LoggedIn && x.Vroom == vroom) x.SendPacket(data); });
         }
 
         public static void BroadcastToUnignoredVroom(ushort vroom, String name, byte[] data)
         {
-            Users.FindAll(x => x.LoggedIn && x.Vroom == vroom).ForEach(x =>
+            Users.ForEach(x =>
             {
-                if (!x.Ignores.Contains(name))
-                    x.SendPacket(data);
+                if (x.LoggedIn && x.Vroom == vroom)
+                    if (!x.Ignores.Contains(name))
+                        x.SendPacket(data);
             });
         }
 
@@ -117,26 +118,33 @@ namespace arca4
 
         public static void SendFastPings(uint time)
         {
-            Users.FindAll(x => x.LoggedIn && x.FastPing && (x.LastFastPing + 5) < time).ForEach(x =>
+            Users.ForEach(x =>
             {
-                x.LastFastPing = time;
-                x.SendPacket(AresTCPPackets.FastPing());
+                if (x.LoggedIn)
+                    if (x.FastPing && (x.LastFastPing + 5) < time)
+                    {
+                        x.LastFastPing = time;
+                        x.SendPacket(AresTCPPackets.FastPing());
+                    }
             });
         }
 
         public static void SendUserList(UserObject userobj)
         {
             userobj.SendPacket(AresTCPPackets.UserListBotItem());
-            Users.FindAll(x => x.LoggedIn && x.Vroom == userobj.Vroom).ForEach(x => userobj.SendPacket(AresTCPPackets.UserListItem(x)));
+            Users.ForEach(x => { if (x.LoggedIn && x.Vroom == userobj.Vroom) userobj.SendPacket(AresTCPPackets.UserListItem(x)); });
             userobj.SendPacket(AresTCPPackets.UserListEnd());
 
-            Users.FindAll(x => x.LoggedIn && x.Vroom == userobj.Vroom).ForEach(x =>
+            Users.ForEach(x =>
             {
-                if (x.Avatar.Length > 0)
-                    userobj.SendPacket(AresTCPPackets.Avatar(x));
+                if (x.LoggedIn && x.Vroom == userobj.Vroom)
+                {
+                    if (x.Avatar.Length > 0)
+                        userobj.SendPacket(AresTCPPackets.Avatar(x));
 
-                if (!String.IsNullOrEmpty(x.PersonalMessage))
-                    userobj.SendPacket(AresTCPPackets.PersonalMessage(x));
+                    if (!String.IsNullOrEmpty(x.PersonalMessage))
+                        userobj.SendPacket(AresTCPPackets.PersonalMessage(x));
+                }
             });
         }
     }
