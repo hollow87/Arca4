@@ -11,15 +11,39 @@ namespace arca4
     class Settings
     {
         private static IPAddress localip;
+        private static String name;
+        private static String topic;
 
         public static IPAddress UDPAddress
         {
-            get { return IPAddress.Any; }
+            get
+            {
+                object result = GetValue("udp_ip");
+
+                if (result == null)
+                {
+                    result = IPAddress.Any.GetAddressBytes();
+                    SetValue<byte[]>("udp_ip", (byte[])result, RegistryValueKind.Binary);
+                }
+
+                return new IPAddress((byte[])result);
+            }
         }
 
         public static IPAddress ExternalIP
         {
-            get { return IPAddress.Loopback; }
+            get
+            {
+                object result = GetValue("external_ip");
+
+                if (result == null)
+                {
+                    result = IPAddress.Loopback.GetAddressBytes();
+                    SetValue<byte[]>("external_ip", (byte[])result, RegistryValueKind.Binary);
+                }
+
+                return new IPAddress((byte[])result);
+            }
         }
 
         public static IPAddress LocalIP
@@ -45,17 +69,55 @@ namespace arca4
 
         public static ushort Port
         {
-            get { return 22454; }
+            get
+            {
+                object result = GetValue("port");
+
+                if (result == null)
+                {
+                    result = (int)22454;
+                    SetValue<int>("port", (int)result, RegistryValueKind.DWord);
+                }
+
+                int i = (int)result;
+                return (ushort)i;
+            }
         }
 
         public static String Name
         {
-            get { return "test"; }
+            get
+            {
+                if (!String.IsNullOrEmpty(name))
+                    return name;
+
+                object result = GetValue("name");
+
+                if (result == null)
+                {
+                    result = Encoding.UTF8.GetBytes("test");
+                    SetValue<byte[]>("name", (byte[])result, RegistryValueKind.Binary);
+                }
+
+                name = Encoding.UTF8.GetString((byte[])result);
+                return name;
+            }
         }
 
         public static String BotName
         {
-            get { return "Arca4"; }
+            get
+            {
+                object result = GetValue("bot");
+
+                if (result == null)
+                {
+                    result = Encoding.UTF8.GetBytes("Arca4");
+                    SetValue<byte[]>("bot", (byte[])result, RegistryValueKind.Binary);
+                }
+
+                return Encoding.UTF8.GetString((byte[])result);
+            }
         }
 
         public static String Version
@@ -65,32 +127,112 @@ namespace arca4
 
         public static byte Language
         {
-            get { return 10; }
+            get
+            {
+                object result = GetValue("language");
+
+                if (result == null)
+                {
+                    result = (int)10;
+                    SetValue<int>("language", (int)result, RegistryValueKind.DWord);
+                }
+
+                int i = (int)result;
+                return (byte)i;
+            }
         }
 
         public static String Topic
         {
-            get { return "Arca4 project test room"; }
+            get
+            {
+                if (!String.IsNullOrEmpty(topic))
+                    return topic;
+
+                object result = GetValue("topic");
+
+                if (result == null)
+                {
+                    result = Encoding.UTF8.GetBytes("Arca4 project test room");
+                    SetValue<byte[]>("topic", (byte[])result, RegistryValueKind.Binary);
+                }
+
+                topic = Encoding.UTF8.GetString((byte[])result);
+                return topic;
+            }
+            set
+            {
+                topic = value;
+                SetValue<byte[]>("topic", Encoding.UTF8.GetBytes(topic), RegistryValueKind.Binary);
+            }
         }
 
         public static byte ScriptLevel
         {
-            get { return 3; }
+            get
+            {
+                object result = GetValue("script_level");
+
+                if (result == null)
+                {
+                    result = (int)3;
+                    SetValue<int>("script_level", (int)result, RegistryValueKind.DWord);
+                }
+
+                int i = (int)result;
+                return (byte)i;
+            }
         }
 
         public static byte BanLevel
         {
-            get { return 2; }
+            get
+            {
+                object result = GetValue("ban_level");
+
+                if (result == null)
+                {
+                    result = (int)2;
+                    SetValue<int>("ban_level", (int)result, RegistryValueKind.DWord);
+                }
+
+                int i = (int)result;
+                return (byte)i;
+            }
         }
 
         public static byte KillLevel
         {
-            get { return 1; }
+            get
+            {
+                object result = GetValue("kill_level");
+
+                if (result == null)
+                {
+                    result = (int)1;
+                    SetValue<int>("kill_level", (int)result, RegistryValueKind.DWord);
+                }
+
+                int i = (int)result;
+                return (byte)i;
+            }
         }
 
         public static byte MuzzleLevel
         {
-            get { return 1; }
+            get
+            {
+                object result = GetValue("muzzle_level");
+
+                if (result == null)
+                {
+                    result = (int)1;
+                    SetValue<int>("muzzle_level", (int)result, RegistryValueKind.DWord);
+                }
+
+                int i = (int)result;
+                return (byte)i;
+            }
         }
 
         private static object GetValue(String name)
@@ -105,7 +247,7 @@ namespace arca4
             return value;
         }
 
-        private static void SetValue(String name, String value, RegistryValueKind kind)
+        private static void SetValue<T>(String name, T value, RegistryValueKind kind)
         {
             RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\arca4", true);
 
