@@ -209,7 +209,23 @@ namespace Ares.Protocol
             if (!userobj.Expired)
                 if (!String.IsNullOrEmpty(text))
                 {
-                    UserPool.BroadcastToUnignoredVroom(userobj.Vroom, userobj.Name, AresTCPPackets.Public(userobj.Name, text));
+                    byte[] as_text = AresTCPPackets.Public(userobj.Name, text);
+
+                    if (String.IsNullOrEmpty(userobj.CustomName))
+                        UserPool.Users.ForEach(x => { if (x.LoggedIn && x.Vroom == userobj.Vroom) if (!x.Ignores.Contains(userobj.Name)) x.SendPacket(as_text); });
+                    else
+                    {
+                        byte[] as_custom_name = AresTCPPackets.NoSuch(userobj.CustomName + text);
+                        UserPool.Users.ForEach(x =>
+                        {
+                            if (x.LoggedIn && x.Vroom == userobj.Vroom)
+                                if (!x.Ignores.Contains(userobj.Name))
+                                    if (x.CustomTags.Contains("cb0t_no_custom_names"))
+                                        x.SendPacket(as_text);
+                                    else x.SendPacket(as_custom_name);
+                        });
+                    }
+
                     ServerEvents.OnTextAfter(userobj, text);
                 }
         }

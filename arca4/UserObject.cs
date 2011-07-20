@@ -46,6 +46,7 @@ namespace arca4
         public bool CanVCPublic { get; set; }
         public bool CanVCPrivate { get; set; }
         public bool SupportsCustomEmoticons { get; set; }
+        public String CustomName { get; set; }
         
 
         private Socket sock;
