@@ -48,6 +48,18 @@ namespace arca4
                 case ProtoMessage.MSG_CHAT_CLIENT_VC_IGNORE:
                     ProcessVCIgnore(userobj, packet);
                     break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_SUPPORTS_CUSTOM_EMOTES:
+                    ProcessSupportsCustomEmotes(userobj);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_CUSTOM_EMOTES_UPLOAD_ITEM:
+                    ProcessCustomEmoteUpload(userobj, packet);
+                    break;
+
+                case ProtoMessage.MSG_CHAT_CLIENT_CUSTOM_EMOTE_DELETE:
+                    ProcessCustomEmoteDelete(userobj, packet);
+                    break;
             }
         }
 
@@ -162,6 +174,65 @@ namespace arca4
                     userobj.VCIgnores.Add(name);
                 }
             }
+        }
+
+        private static void ProcessSupportsCustomEmotes(UserObject userobj)
+        {
+            if (!Settings.CanCustomEmotes)
+                return;
+
+            if (!userobj.SupportsCustomEmoticons)
+            {
+                userobj.SupportsCustomEmoticons = true;
+                userobj.CustomEmoticons.Clear();
+                UserPool.SendCustomEmotesToUser(userobj);
+            }
+        }
+
+        private static void ProcessCustomEmoteUpload(UserObject userobj, AresTCPPacketReader packet)
+        {
+            if (!Settings.CanCustomEmotes)
+                return;
+
+            ProcessSupportsCustomEmotes(userobj);
+
+            CustomEmoticon emoticon = new CustomEmoticon
+            {
+                Shortcut = packet.ReadString(),
+                Size = packet.ReadByte(),
+                Image = packet.ReadBytes()
+            };
+
+            userobj.CustomEmoticons.Add(emoticon);
+
+            if (userobj.CustomEmoticons.Count > 16)
+                throw new Exception("exceeded custom emoticon maximum");
+
+            byte[] buf = CustomPackets.CustomEmoteItem(userobj, emoticon);
+
+            UserPool.Users.ForEach(x =>
+            {
+                if (x.LoggedIn && x.Vroom == userobj.Vroom)
+                    if (x.SupportsCustomEmoticons)
+                        x.SendPacket(buf);
+            });
+        }
+
+        private static void ProcessCustomEmoteDelete(UserObject userobj, AresTCPPacketReader packet)
+        {
+            if (!Settings.CanCustomEmotes)
+                return;
+
+            String text = packet.ReadString();
+            userobj.CustomEmoticons.RemoveAll(x => x.Shortcut == text);
+            byte[] buf = CustomPackets.CustomEmoteDelete(userobj, text);
+
+            UserPool.Users.ForEach(x =>
+            {
+                if (x.LoggedIn && x.Vroom == userobj.Vroom)
+                    if (x.SupportsCustomEmoticons)
+                        x.SendPacket(buf);
+            });
         }
     }
 }

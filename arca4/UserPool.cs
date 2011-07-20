@@ -183,5 +183,15 @@ namespace arca4
                                 x.SendPacket(packet);
             });
         }
+
+        public static void SendCustomEmotesToUser(UserObject userobj)
+        {
+            Users.ForEach(x =>
+            {
+                if (x.LoggedIn && x.Vroom == userobj.Vroom)
+                    if (x.SupportsCustomEmoticons)
+                        x.CustomEmoticons.ForEach(y => userobj.SendPacket(CustomPackets.CustomEmoteItem(x, y)));
+            });
+        }
     }
 }

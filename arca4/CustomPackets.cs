@@ -132,5 +132,39 @@ namespace Ares.Protocol
             packet.WriteBytes(buf);
             return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
         }
+
+        public static byte[] SupportsCustomEmotes()
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteByte(16);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_SUPPORTS_CUSTOM_EMOTES);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
+
+        public static byte[] CustomEmoteItem(UserObject userobj, CustomEmoticon item)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(userobj.Name);
+            packet.WriteString(item.Shortcut);
+            packet.WriteByte(item.Size);
+            packet.WriteBytes(item.Image);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_CUSTOM_EMOTES_ITEM);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
+
+        public static byte[] CustomEmoteDelete(UserObject userobj, String shortcut)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(userobj.Name);
+            packet.WriteString(shortcut);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_CUSTOM_EMOTE_DELETE);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
     }
 }

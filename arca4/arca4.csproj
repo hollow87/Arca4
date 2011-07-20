@@ -51,6 +51,7 @@
     <Compile Include="Bans.cs" />
     <Compile Include="BrowseRequest.cs" />
     <Compile Include="CommandObject.cs" />
+    <Compile Include="CustomEmoticon.cs" />
     <Compile Include="CustomPacketProcessor.cs" />
     <Compile Include="CustomPackets.cs" />
     <Compile Include="DebugLog.cs" />

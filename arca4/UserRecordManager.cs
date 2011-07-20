@@ -15,9 +15,9 @@ namespace arca4
             items = new List<UserRecordItem>();
         }
 
-        public static void AddItem(UserObject userobj)
+        public static void AddItem(UserObject userobj, uint time)
         {
-            items.Add(new UserRecordItem(userobj));
+            items.Add(new UserRecordItem(userobj, time));
         }
 
         public static bool IsJoinFlooding(UserObject userobj, uint time)
@@ -35,17 +35,6 @@ namespace arca4
         public IPAddress LocalIP { get; private set; }
         public ushort Port { get; private set; }
         public uint Time { get; private set; }
-
-        public UserRecordItem(UserObject userobj)
-        {
-            this.Name = userobj.Name;
-            this.Version = userobj.Version;
-            this.Guid = userobj.Guid;
-            this.ExternalIP = userobj.ExternalIP;
-            this.LocalIP = userobj.LocalIP;
-            this.Port = userobj.Port;
-            this.Time = userobj.Cookie;
-        }
 
         public UserRecordItem(UserObject userobj, uint time)
         {

@@ -34,6 +34,7 @@ namespace arca4
         public List<String> Ignores { get; private set; }
         public List<String> VCIgnores { get; private set; }
         public List<String> CustomTags { get; private set; }
+        public List<CustomEmoticon> CustomEmoticons { get; private set; }
         public bool FastPing { get; set; }
         public bool Ghost { get; set; }
         public uint LastFastPing { get; set; }
@@ -44,6 +45,7 @@ namespace arca4
         public Font Font { get; set; }
         public bool CanVCPublic { get; set; }
         public bool CanVCPrivate { get; set; }
+        public bool SupportsCustomEmoticons { get; set; }
         
 
         private Socket sock;
@@ -73,6 +75,7 @@ namespace arca4
             this.Ignores = new List<String>();
             this.VCIgnores = new List<String>();
             this.CustomTags = new List<String>();
+            this.CustomEmoticons = new List<CustomEmoticon>();
             this.Files = new List<SharedItem>();
         }
 
@@ -188,6 +191,10 @@ namespace arca4
                             this.LoggedIn = true;
                             this.SendPacket(AresTCPPackets.LoginAck(this));
                             this.SendPacket(AresTCPPackets.TopicFirst());
+
+                            if (Settings.CanCustomEmotes)
+                                this.SendPacket(CustomPackets.SupportsCustomEmotes());
+
                             UserPool.SendUserList(this);
                             UserPool.SendUserFeatures(this);
                             this.SendPacket(AresTCPPackets.OpChange(this));
@@ -214,6 +221,10 @@ namespace arca4
                     this.LoggedIn = true;
                     this.SendPacket(AresTCPPackets.LoginAck(this));
                     this.SendPacket(AresTCPPackets.TopicFirst());
+
+                    if (Settings.CanCustomEmotes)
+                        this.SendPacket(CustomPackets.SupportsCustomEmotes());
+
                     UserPool.SendUserList(this);
                     UserPool.SendUserFeatures(this);
                     this.SendPacket(AresTCPPackets.OpChange(this));

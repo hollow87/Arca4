@@ -152,7 +152,7 @@ namespace Ares.Protocol
                 return;
             }
 
-            UserRecordManager.AddItem(userobj);
+            UserRecordManager.AddItem(userobj, time);
 
             if (Bans.IsBanned(userobj))
             {
@@ -178,6 +178,10 @@ namespace Ares.Protocol
             userobj.SendPacket(AresTCPPackets.MyFeatures(userobj));
             userobj.SendPacket(CustomPackets.SupportsVoiceClips());
             userobj.SendPacket(AresTCPPackets.TopicFirst());
+
+            if (Settings.CanCustomEmotes)
+                userobj.SendPacket(CustomPackets.SupportsCustomEmotes());
+
             UserPool.SendUserList(userobj);
             userobj.SendPacket(AresTCPPackets.OpChange(userobj));
 
