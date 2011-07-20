@@ -138,14 +138,7 @@ namespace arca4
                 DefaultCommands.Info(userobj);
         }
 
-        /**
-         * Commands which can be used by anyone
-         */
-        private static String[] PUBLIC_COMMANDS = { "#register <password>", "#unregister <password>", "login <password>", "#info" }; 
-        /**
-         * Commands which are toggled via general
-         */
-        private static String[] GENERAL_COMMANDS = { "" };
+        private static String[] PUBLIC_COMMANDS = { "#register <password>", "#unregister <password>", "login <password>", "#info" };
 
         public static void OnHelp(UserObject userobj, Boolean bot)
         {
@@ -153,40 +146,31 @@ namespace arca4
             {
                 userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, command) : AresTCPPackets.NoSuch(command)));
             }
-            if (Settings.GeneralCommands)
-            {
-                foreach (String command in GENERAL_COMMANDS)
-                {
-                    userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, command) : AresTCPPackets.NoSuch(command)));
-                }
-            }
-            /**
-            *  Could do with a better way of doing this... Rather then ternary for each help command, maybe a multi dimensional array =/ - thispixel
-            */
+
             if (userobj.Level >= Settings.MuzzleLevel)
             {
-                userobj.SendPacket(AresTCPPackets.NoSuch("#muzzle <user>"));
-                userobj.SendPacket(AresTCPPackets.NoSuch("#unmuzzle <user>"));
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#muzzle <user>") : AresTCPPackets.NoSuch("#muzzle <user>")));
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#muzzle <user>") : AresTCPPackets.NoSuch("#muzzle <user>")));
             }
 
             if (userobj.Level >= Settings.KillLevel)
-                userobj.SendPacket(AresTCPPackets.NoSuch("#kill <user>"));
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#kill <user>") : AresTCPPackets.NoSuch("#kill <user>")));
 
             if (userobj.Level >= Settings.BanLevel)
             {
-                userobj.SendPacket(AresTCPPackets.NoSuch("#ban <user>"));
-                userobj.SendPacket(AresTCPPackets.NoSuch("#unban <user>"));
-                userobj.SendPacket(AresTCPPackets.NoSuch("#listbans"));
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#ban <user>") : AresTCPPackets.NoSuch("#ban <user>")));
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#unban <user>") : AresTCPPackets.NoSuch("#unban <user>")));
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#listbans") : AresTCPPackets.NoSuch("#listbans")));
             }
 
             if (userobj.Level == 3)
-                userobj.SendPacket(AresTCPPackets.NoSuch("#setuserlevel <user> <level>"));
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#setuserlevel <user> <level>") : AresTCPPackets.NoSuch("#setuserlevel <user> <level>")));
 
             if (userobj.Level >= Settings.ScriptLevel)
             {
-                userobj.SendPacket(AresTCPPackets.NoSuch("#loadscript <filename>"));
-                userobj.SendPacket(AresTCPPackets.NoSuch("#killscript <filename>"));
-                userobj.SendPacket(AresTCPPackets.NoSuch("#listscripts"));
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#loadscript <filename>") : AresTCPPackets.NoSuch("#loadscript <filename>")));
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#killscript <filename>") : AresTCPPackets.NoSuch("#killscript <filename>")));
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#listscripts") : AresTCPPackets.NoSuch("#listscripts")));
             }
         }
 

@@ -286,28 +286,6 @@ namespace arca4
             }
         }
 
-        public static bool GeneralCommands
-        {
-            get
-            {
-                object result = GetValue("general_commands");
-
-                if (result == null)
-                {
-                    result = (int)0;
-                    SetValue<int>("general_commands", (int)result, RegistryValueKind.DWord);
-                }
-
-                int i = (int)result;
-                return i == 1;
-            }
-            set
-            {
-                int result = (value ? 1 : 0);
-                SetValue<int>("general_commands", (int)result, RegistryValueKind.DWord);
-            }
-        }
-
         private static object GetValue(String name)
         {
             RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\arca4");
