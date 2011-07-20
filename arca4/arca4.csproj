@@ -51,9 +51,11 @@
     <Compile Include="Bans.cs" />
     <Compile Include="BrowseRequest.cs" />
     <Compile Include="CommandObject.cs" />
+    <Compile Include="CustomPacketProcessor.cs" />
     <Compile Include="CustomPackets.cs" />
     <Compile Include="DebugLog.cs" />
     <Compile Include="DefaultCommands.cs" />
+    <Compile Include="Font.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Mime.cs" />
     <Compile Include="Muzzles.cs" />

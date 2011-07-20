@@ -135,6 +135,7 @@ namespace arca4
             Users.ForEach(x => { if (x.LoggedIn && x.Vroom == userobj.Vroom) userobj.SendPacket(AresTCPPackets.UserListItem(x)); });
             userobj.SendPacket(AresTCPPackets.UserListEnd());
 
+            // post list credentials
             Users.ForEach(x =>
             {
                 if (x.LoggedIn && x.Vroom == userobj.Vroom)
@@ -144,6 +145,9 @@ namespace arca4
 
                     if (!String.IsNullOrEmpty(x.PersonalMessage))
                         userobj.SendPacket(AresTCPPackets.PersonalMessage(x));
+
+                    if (x.Font != null)
+                        userobj.SendPacket(CustomPackets.CustomFont(x));
                 }
             });
         }

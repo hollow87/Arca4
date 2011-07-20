@@ -32,6 +32,7 @@ namespace arca4
         public byte Country { get; private set; }
         public String Location { get; private set; }
         public List<String> Ignores { get; private set; }
+        public List<String> CustomTags { get; private set; }
         public bool FastPing { get; set; }
         public bool Ghost { get; set; }
         public uint LastFastPing { get; set; }
@@ -39,6 +40,7 @@ namespace arca4
         public bool Registered { get; set; }
         public bool Muzzled { get; set; }
         public bool SHALoginAttempt { get; set; }
+        public Font Font { get; set; }
         
 
         private Socket sock;
@@ -66,6 +68,7 @@ namespace arca4
                 this.Cookie++;
 
             this.Ignores = new List<String>();
+            this.CustomTags = new List<String>();
             this.Files = new List<SharedItem>();
         }
 

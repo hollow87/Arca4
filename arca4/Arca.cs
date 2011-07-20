@@ -39,14 +39,14 @@ namespace arca4
             this.listener = new TcpListener(new IPEndPoint(IPAddress.Any, Settings.Port));
             this.listener.Start();
 
-            uint one_second_timer = UnixTime;
+            uint one_second_timer = Helpers.UnixTime;
 
             while (true)
             {
                 if (this.terminate)
                     return;
 
-                uint time = UnixTime;
+                uint time = Helpers.UnixTime;
                 this.CheckNewUsers(time);
                 this.ServiceCurrentUsers(time);
                 ServerEvents.OnTimer();
@@ -72,15 +72,6 @@ namespace arca4
             UserPool.Users.ForEach(x => x.SocketTasks(time));
             UserPool.Users.FindAll(x => x.Expired).ForEach(x => x.Disconnect());
             UserPool.Users.RemoveAll(x => x.Expired);
-        }
-
-        private static uint UnixTime
-        {
-            get
-            {
-                TimeSpan ts = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0));
-                return (uint)ts.TotalSeconds;
-            }
         }
 
     }

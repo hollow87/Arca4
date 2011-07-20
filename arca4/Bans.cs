@@ -10,27 +10,7 @@ namespace arca4
 {
     class Bans
     {
-        private class BannedItem
-        {
-            public String Name { get; private set; }
-            public IPAddress ExternalIP { get; private set; }
-            public IPAddress LocalIP { get; private set; }
-            public ushort Port { get; private set; }
-            public Guid Guid { get; private set; }
-            public String Version { get; private set; }
-
-            public BannedItem(UserObject userobj)
-            {
-                this.Name = userobj.Name;
-                this.ExternalIP = userobj.ExternalIP;
-                this.LocalIP = userobj.LocalIP;
-                this.Port = userobj.Port;
-                this.Guid = userobj.Guid;
-                this.Version = userobj.Version;
-            }
-        }
-
-        private static List<BannedItem> Items = new List<BannedItem>();
+        private static List<UserRecordItem> Items = new List<UserRecordItem>();
 
         public static bool IsBanned(UserObject userobj)
         {
@@ -39,7 +19,7 @@ namespace arca4
 
         public static void AddBan(UserObject userobj)
         {
-            Items.Add(new BannedItem(userobj));
+            Items.Add(new UserRecordItem(userobj, Helpers.UnixTime));
         }
 
         public static String RemoveBan(String name)

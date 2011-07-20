@@ -13,6 +13,11 @@ namespace arca4
 
         }
 
+        public static bool OnFlood(UserObject userobj)
+        {
+            return true;
+        }
+
         public static bool OnJoinCheck(UserObject userobj)
         {
             return true;

@@ -100,5 +100,14 @@ namespace arca4
 
             return ip.Equals(Settings.ExternalIP);
         }
+
+        public static uint UnixTime
+        {
+            get
+            {
+                TimeSpan ts = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0));
+                return (uint)ts.TotalSeconds;
+            }
+        }
     }
 }

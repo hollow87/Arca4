@@ -46,5 +46,16 @@ namespace arca4
             this.Port = userobj.Port;
             this.Time = userobj.Cookie;
         }
+
+        public UserRecordItem(UserObject userobj, uint time)
+        {
+            this.Name = userobj.Name;
+            this.Version = userobj.Version;
+            this.Guid = userobj.Guid;
+            this.ExternalIP = userobj.ExternalIP;
+            this.LocalIP = userobj.LocalIP;
+            this.Port = userobj.Port;
+            this.Time = time;
+        }
     }
 }

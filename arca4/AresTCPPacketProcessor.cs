@@ -113,6 +113,10 @@ namespace Ares.Protocol
                 case ProtoMessage.MSG_CHAT_CLIENT_CUSTOM_DATA_ALL:
                     ProcessCustomDataAll(userobj, packet);
                     break;
+
+                case ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL:
+                    ProcessCustomProtocol(userobj, packet);
+                    break;
             }
         }
 
@@ -451,6 +455,14 @@ namespace Ares.Protocol
             byte[] data = packet.ReadBytes();
             data = CustomPackets.CustomData(userobj.Name, ident, data);
             UserPool.Users.ForEach(x => { if (x.LoggedIn && x.ID != userobj.ID) x.SendPacket(data); });
+        }
+
+        private static void ProcessCustomProtocol(UserObject userobj, AresTCPPacketReader packet)
+        {
+            packet.SkipBytes(2);
+            ProtoMessage msg = (ProtoMessage)packet.ReadByte();
+            byte[] data = packet.ReadBytes();
+            CustomPacketProcessor.Eval(userobj, msg, new AresTCPPacketReader(data));
         }
     }
 }
