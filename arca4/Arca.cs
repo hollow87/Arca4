@@ -35,6 +35,7 @@ namespace arca4
             UserRecordManager.Init();
             Muzzles.LoadRecords();
             Bans.LoadRecords();
+            MOTD.LoadMOTD();
 
             this.listener = new TcpListener(new IPEndPoint(IPAddress.Any, Settings.Port));
             this.listener.Start();

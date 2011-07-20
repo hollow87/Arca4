@@ -181,7 +181,7 @@ namespace Ares.Protocol
             userobj.SendPacket(AresTCPPackets.OpChange(userobj));
 
             if (!userobj.FastPing)
-                ServerEvents.OnMOTD(userobj);
+                MOTD.SendMOTD(userobj);
 
             ServerEvents.OnJoin(userobj);
         }
