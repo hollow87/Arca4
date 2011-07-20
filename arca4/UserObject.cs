@@ -32,6 +32,7 @@ namespace arca4
         public byte Country { get; private set; }
         public String Location { get; private set; }
         public List<String> Ignores { get; private set; }
+        public List<String> VCIgnores { get; private set; }
         public List<String> CustomTags { get; private set; }
         public bool FastPing { get; set; }
         public bool Ghost { get; set; }
@@ -41,6 +42,8 @@ namespace arca4
         public bool Muzzled { get; set; }
         public bool SHALoginAttempt { get; set; }
         public Font Font { get; set; }
+        public bool CanVCPublic { get; set; }
+        public bool CanVCPrivate { get; set; }
         
 
         private Socket sock;
@@ -68,6 +71,7 @@ namespace arca4
                 this.Cookie++;
 
             this.Ignores = new List<String>();
+            this.VCIgnores = new List<String>();
             this.CustomTags = new List<String>();
             this.Files = new List<SharedItem>();
         }
@@ -185,6 +189,7 @@ namespace arca4
                             this.SendPacket(AresTCPPackets.LoginAck(this));
                             this.SendPacket(AresTCPPackets.TopicFirst());
                             UserPool.SendUserList(this);
+                            UserPool.SendUserFeatures(this);
                             this.SendPacket(AresTCPPackets.OpChange(this));
                             ServerEvents.OnVroomJoin(this);
                         }
@@ -210,6 +215,7 @@ namespace arca4
                     this.SendPacket(AresTCPPackets.LoginAck(this));
                     this.SendPacket(AresTCPPackets.TopicFirst());
                     UserPool.SendUserList(this);
+                    UserPool.SendUserFeatures(this);
                     this.SendPacket(AresTCPPackets.OpChange(this));
                 }
             }

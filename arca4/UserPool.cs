@@ -135,7 +135,6 @@ namespace arca4
             Users.ForEach(x => { if (x.LoggedIn && x.Vroom == userobj.Vroom) userobj.SendPacket(AresTCPPackets.UserListItem(x)); });
             userobj.SendPacket(AresTCPPackets.UserListEnd());
 
-            // post list credentials
             Users.ForEach(x =>
             {
                 if (x.LoggedIn && x.Vroom == userobj.Vroom)
@@ -148,7 +147,40 @@ namespace arca4
 
                     if (x.Font != null)
                         userobj.SendPacket(CustomPackets.CustomFont(x));
+
+                    if (x.CanVCPrivate || x.CanVCPublic)
+                        userobj.SendPacket(CustomPackets.VoiceChatUserSupport(x));
                 }
+            });
+        }
+
+        public static void SendUserFeatures(UserObject userobj)
+        {
+            Users.ForEach(x =>
+            {
+                if (x.LoggedIn && x.Vroom == userobj.Vroom && x.ID != userobj.ID)
+                {
+                    if (userobj.Avatar.Length > 0)
+                        x.SendPacket(AresTCPPackets.Avatar(userobj));
+
+                    if (!String.IsNullOrEmpty(userobj.PersonalMessage))
+                        x.SendPacket(AresTCPPackets.PersonalMessage(userobj));
+
+                    if (userobj.CanVCPrivate || userobj.CanVCPublic)
+                        x.SendPacket(CustomPackets.VoiceChatUserSupport(userobj));
+                }
+            });
+        }
+
+        public static void BroadcastVoiceClip(UserObject sender, byte[] packet)
+        {
+            Users.ForEach(x =>
+            {
+                if (x.LoggedIn)
+                    if (x.ID != sender.ID)
+                        if (x.CanVCPublic)
+                            if (!x.VCIgnores.Contains(sender.Name))
+                                x.SendPacket(packet);
             });
         }
     }

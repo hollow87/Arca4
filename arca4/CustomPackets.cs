@@ -45,5 +45,92 @@ namespace Ares.Protocol
             packet.WriteBytes(buf);
             return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
         }
+
+        public static byte[] SupportsVoiceClips()
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteByte(Settings.CanVoiceChat ? (byte)1 : (byte)0);
+            packet.WriteByte(0);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_VC_SUPPORTED);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
+
+        public static byte[] VoiceChatUserSupport(UserObject userobj)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(userobj.Name);
+            packet.WriteByte(userobj.CanVCPublic ? (byte)1 : (byte)0);
+            packet.WriteByte(userobj.CanVCPrivate ? (byte)1 : (byte)0);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_VC_USER_SUPPORTED);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
+
+        public static byte[] VoiceChatFirst(String sender, byte[] buffer)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(sender);
+            packet.WriteBytes(buffer);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_VC_FIRST);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
+
+        public static byte[] VoiceChatFirstTo(String sender, byte[] buffer)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(sender);
+            packet.WriteBytes(buffer);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_VC_FIRST_FROM);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
+
+        public static byte[] VoiceChatChunk(String sender, byte[] buffer)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(sender);
+            packet.WriteBytes(buffer);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_VC_CHUNK);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
+
+        public static byte[] VoiceChatChunkTo(String sender, byte[] buffer)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(sender);
+            packet.WriteBytes(buffer);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_VC_CHUNK_FROM);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
+
+        public static byte[] VoiceChatIgnored(String sender)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(sender);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_VC_IGNORE);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
+
+        public static byte[] VoiceChatNoPrivate(String sender)
+        {
+            AresTCPPacketWriter packet = new AresTCPPacketWriter();
+            packet.WriteString(sender);
+            byte[] buf = packet.ToAresPacket(ProtoMessage.MSG_CHAT_SERVER_VC_NOPVT);
+            packet = new AresTCPPacketWriter();
+            packet.WriteBytes(buf);
+            return packet.ToAresPacket(ProtoMessage.MSG_CHAT_ADVANCED_FEATURES_PROTOCOL);
+        }
     }
 }

@@ -176,6 +176,7 @@ namespace Ares.Protocol
             userobj.LoggedIn = true;
             userobj.SendPacket(AresTCPPackets.LoginAck(userobj));
             userobj.SendPacket(AresTCPPackets.MyFeatures(userobj));
+            userobj.SendPacket(CustomPackets.SupportsVoiceClips());
             userobj.SendPacket(AresTCPPackets.TopicFirst());
             UserPool.SendUserList(userobj);
             userobj.SendPacket(AresTCPPackets.OpChange(userobj));
