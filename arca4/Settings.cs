@@ -252,6 +252,40 @@ namespace arca4
             }
         }
 
+        public static bool CanVoiceChat
+        {
+            get
+            {
+                object result = GetValue("voice_chat");
+
+                if (result == null)
+                {
+                    result = (int)1;
+                    SetValue<int>("voice_chat", (int)result, RegistryValueKind.DWord);
+                }
+
+                int i = (int)result;
+                return i == 1;
+            }
+        }
+
+        public static bool CanCustomEmotes
+        {
+            get
+            {
+                object result = GetValue("custom_emotes");
+
+                if (result == null)
+                {
+                    result = (int)1;
+                    SetValue<int>("custom_emotes", (int)result, RegistryValueKind.DWord);
+                }
+
+                int i = (int)result;
+                return i == 1;
+            }
+        }
+
         public static bool GeneralCommands
         {
             get
