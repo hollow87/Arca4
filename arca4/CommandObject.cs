@@ -9,6 +9,7 @@ namespace arca4
     {
         public UserObject target { get; set; }
         public String args { get; set; }
+        public Boolean bot { get; set; }
 
         public CommandObject()
         {

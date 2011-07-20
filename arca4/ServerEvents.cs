@@ -90,7 +90,7 @@ namespace arca4
 
         }
 
-        public static void OnCommand(UserObject userobj, String command, UserObject target, String args)
+        public static void OnCommand(UserObject userobj, String command, UserObject target, String args, Boolean bot)
         {
             if (command.StartsWith("loadscript "))
             {
@@ -128,9 +128,13 @@ namespace arca4
                 DefaultCommands.Info(userobj);
         }
 
-        public static void OnHelp(UserObject userobj)
+        public static void OnHelp(UserObject userobj, Boolean bot)
         {
-            userobj.SendPacket(AresTCPPackets.NoSuch("#register <password>"));
+            /**
+            *  Could do with a better way of doing this... Rather then ternary for each help command, maybe a multi dimensional array =/ - thispixel
+            */
+            //userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#register <password>") : AresTCPPackets.NoSuch("#register <password>")));
+            userobj.SendPacket(AresTCPPackets.NoSuch("#register <password>")));
             userobj.SendPacket(AresTCPPackets.NoSuch("#unregister <password>"));
             userobj.SendPacket(AresTCPPackets.NoSuch("#login <password>"));
             userobj.SendPacket(AresTCPPackets.NoSuch("#info"));

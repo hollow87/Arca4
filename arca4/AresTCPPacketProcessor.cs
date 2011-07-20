@@ -63,11 +63,11 @@ namespace Ares.Protocol
                     break;
 
                 case ProtoMessage.MSG_CHAT_CLIENT_COMMAND:
-                    ProcessCommandText(userobj, packet.ReadString());
+                    ProcessCommandText(userobj, packet.ReadString(), false);
                     break;
 
                 case ProtoMessage.MSG_CHAT_CLIENT_AUTHLOGIN:
-                    ProcessCommandText(userobj, "login " + packet.ReadString());
+                    ProcessCommandText(userobj, "login " + packet.ReadString(), false);
                     break;
 
                 case ProtoMessage.MSG_CHAT_CLIENT_ADDSHARE:
@@ -87,7 +87,7 @@ namespace Ares.Protocol
                     break;
 
                 case ProtoMessage.MSG_CHAT_CLIENT_AUTHREGISTER:
-                    ProcessCommandText(userobj, "register " + packet.ReadString());
+                    ProcessCommandText(userobj, "register " + packet.ReadString(), false);
                     break;
 
                 case ProtoMessage.MSG_CHAT_CLIENT_DIRCHATPUSH:
@@ -188,7 +188,7 @@ namespace Ares.Protocol
 
             if (text.StartsWith("#"))
             {
-                ProcessCommandText(userobj, text.Substring(1));
+                ProcessCommandText(userobj, text.Substring(1), false);
 
                 foreach (String str in built_in_commands)
                     if (text.Substring(1).StartsWith(str))
@@ -205,10 +205,10 @@ namespace Ares.Protocol
                 }
         }
 
-        private static void ProcessCommandText(UserObject userobj, String text)
+        private static void ProcessCommandText(UserObject userobj, String text, Boolean bot)
         {
             if (text == "help")
-                ServerEvents.OnHelp(userobj);
+                ServerEvents.OnHelp(userobj, bot);
             else if (text.StartsWith("register "))
                 UserAccounts.Register(userobj, text.Substring(9));
             else if (text.StartsWith("unregister "))
@@ -218,7 +218,7 @@ namespace Ares.Protocol
             else
             {
                 CommandObject cmd = Helpers.TextToCommand(userobj, text);
-                ServerEvents.OnCommand(userobj, text, cmd.target, cmd.args);
+                ServerEvents.OnCommand(userobj, text, cmd.target, cmd.args, bot);
             }
         }
 
@@ -244,7 +244,7 @@ namespace Ares.Protocol
             {
                 if (text.StartsWith("#") || text.StartsWith("/"))
                 {
-                    ProcessCommandText(userobj, text.Substring(1));
+                    ProcessCommandText(userobj, text.Substring(1), true);
 
                     foreach (String str in built_in_commands)
                         if (text.Substring(1).StartsWith(str))
