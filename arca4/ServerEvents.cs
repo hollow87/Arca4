@@ -128,17 +128,31 @@ namespace arca4
                 DefaultCommands.Info(userobj);
         }
 
+        /**
+         * Commands which can be used by anyone
+         */
+        private static String[] PUBLIC_COMMANDS = { "#register <password>", "#unregister <password>", "login <password>", "#info" }; 
+        /**
+         * Commands which are toggled via general
+         */
+        private static String[] GENERAL_COMMANDS = { "" };
+
         public static void OnHelp(UserObject userobj, Boolean bot)
         {
+            foreach (String command in PUBLIC_COMMANDS)
+            {
+                userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, command) : AresTCPPackets.NoSuch(command)));
+            }
+            if (Settings.GeneralCommands)
+            {
+                foreach (String command in GENERAL_COMMANDS)
+                {
+                    userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, command) : AresTCPPackets.NoSuch(command)));
+                }
+            }
             /**
             *  Could do with a better way of doing this... Rather then ternary for each help command, maybe a multi dimensional array =/ - thispixel
             */
-            //userobj.SendPacket((bot ? AresTCPPackets.Private(Settings.BotName, "#register <password>") : AresTCPPackets.NoSuch("#register <password>")));
-            userobj.SendPacket(AresTCPPackets.NoSuch("#register <password>")));
-            userobj.SendPacket(AresTCPPackets.NoSuch("#unregister <password>"));
-            userobj.SendPacket(AresTCPPackets.NoSuch("#login <password>"));
-            userobj.SendPacket(AresTCPPackets.NoSuch("#info"));
-
             if (userobj.Level >= Settings.MuzzleLevel)
             {
                 userobj.SendPacket(AresTCPPackets.NoSuch("#muzzle <user>"));
