@@ -58,6 +58,7 @@
     <Compile Include="Font.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Mime.cs" />
+    <Compile Include="MOTD.cs" />
     <Compile Include="Muzzles.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

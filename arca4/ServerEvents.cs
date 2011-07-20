@@ -30,7 +30,12 @@ namespace arca4
 
         public static void OnMOTD(UserObject userobj)
         {
+            List<String> lines = new List<String>();
 
+            // scripting should populate this list
+
+            lines.Add("Welcome to my chatroom " + userobj.Name); // delete this once we have scripting connected
+            MOTD.SendMOTD(userobj, lines.ToArray());
         }
 
         public static void OnJoin(UserObject userobj)
