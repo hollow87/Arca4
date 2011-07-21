@@ -10,7 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JS", "JS", "{4DE9D606-9FE7-
 		Scripting\JS\INFO.txt = Scripting\JS\INFO.txt
 		Scripting\JS\mozjs185-1.0.dll = Scripting\JS\mozjs185-1.0.dll
 		Scripting\JS\nspr4.dll = Scripting\JS\nspr4.dll
-		Scripting\JS\smnetjs.dll = Scripting\JS\smnetjs.dll
 	EndProjectSection
 EndProject
 Global
