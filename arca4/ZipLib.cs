@@ -21,7 +21,6 @@ namespace Compression
         [DllImport("zlib1.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern int uncompress(byte[] destBuffer, ref uint destLen, byte[] sourceBuffer, uint sourceLen);
 
-
         public static byte[] Compress(byte[] data)
         {
             uint _dLen = (uint)Math.Round((double)(data.Length * 1.1) + 12);
@@ -32,7 +31,6 @@ namespace Compression
 
             return _d.Take((int)_dLen).ToArray();
         }
-
         public static byte[] Decompress(byte[] data)
         {
             uint _dLen = 8192;

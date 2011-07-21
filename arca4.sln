@@ -3,6 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "arca4", "arca4\arca4.csproj", "{230BE288-7748-41C9-817C-1D32D431C23E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripting", "Scripting", "{1ACFF1BD-8D38-4EE4-B517-143EA55B1C26}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JS", "JS", "{4DE9D606-9FE7-4498-966D-C93CB88E95DE}"
+	ProjectSection(SolutionItems) = preProject
+		Scripting\JS\INFO.txt = Scripting\JS\INFO.txt
+		Scripting\JS\mozjs185-1.0.dll = Scripting\JS\mozjs185-1.0.dll
+		Scripting\JS\nspr4.dll = Scripting\JS\nspr4.dll
+		Scripting\JS\smnetjs.dll = Scripting\JS\smnetjs.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -16,6 +26,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4DE9D606-9FE7-4498-966D-C93CB88E95DE} = {1ACFF1BD-8D38-4EE4-B517-143EA55B1C26}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		VisualSVNWorkingCopyRoot = .

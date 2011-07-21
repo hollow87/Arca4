@@ -1,0 +1,3 @@
+mozjs185-1.0.dll : https://developer.mozilla.org/en/SpiderMonkey
+nspr4.dll : https://developer.mozilla.org/en/NSPR
+smnetjs.dll : http://spidermonkeydotnet.codeplex.com/

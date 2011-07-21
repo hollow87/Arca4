@@ -33,7 +33,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="smnetjs">
+      <HintPath>..\Scripting\JS\smnetjs.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -66,6 +72,13 @@
     <Compile Include="AresTCPDataStack.cs" />
     <Compile Include="ProtoMessage.cs" />
     <Compile Include="RejectionType.cs" />
+    <Compile Include="Scripting\EventType.cs" />
+    <Compile Include="Scripting\JS\Events.cs" />
+    <Compile Include="Scripting\JS\Global.cs" />
+    <Compile Include="Scripting\JS\Script.cs" />
+    <Compile Include="Scripting\JS\UserObj.cs" />
+    <Compile Include="Scripting\ScriptManager.cs" />
+    <Compile Include="Scripting\ScriptObj.cs" />
     <Compile Include="SearchRequest.cs" />
     <Compile Include="ServerEvents.cs" />
     <Compile Include="Settings.cs" />
@@ -76,7 +89,11 @@
     <Compile Include="UserRecordManager.cs" />
     <Compile Include="ZipLib.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>copy $(SolutionDir)Scripting\JS\*.dll $(TargetDir)</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

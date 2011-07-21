@@ -11,6 +11,8 @@ namespace arca4
 {
     class UserObject
     {
+		internal Scripting.JS.UserObj ScriptUserObj { get; private set; }
+
         public int ID { get; set; }
         public IPAddress ExternalIP { get; private set; }
         public bool LoggedIn { get; set; }
@@ -78,6 +80,8 @@ namespace arca4
             this.CustomTags = new List<String>();
             this.CustomEmoticons = new List<CustomEmoticon>();
             this.Files = new List<SharedItem>();
+
+			ScriptUserObj = new Scripting.JS.UserObj(this);
         }
 
         public void SendPacket(byte[] data)

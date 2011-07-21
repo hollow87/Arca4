@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using arca4.Scripting;
 using Ares.Protocol;
 
 namespace arca4
@@ -12,18 +14,51 @@ namespace arca4
         {
             if (userobj.Level < Settings.ScriptLevel)
                 return;
+
+			string scriptDir = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+			scriptDir = System.IO.Path.Combine(scriptDir, "Arca4", "Scripts");
+			if (!Directory.Exists(scriptDir))
+				Directory.CreateDirectory(scriptDir);
+
+			// Not a javascript script
+			if (!args.EndsWith(".js"))
+			{
+				// TODO: Localizaton support
+				userobj.SendPacket(AresTCPPackets.NoSuch("File is not a javascript script"));
+				return;
+			}
+
+			// file doesnt exist return false
+			string filePath = Path.Combine(scriptDir, args);
+			if (!File.Exists(filePath))
+			{
+				// TODO: Localizaton support
+				userobj.SendPacket(AresTCPPackets.NoSuch("File does not exist"));
+				return;
+			}
+
+
+			ScriptManager.Items.Remove(args);
+			ScriptManager.Items.Add(args, File.ReadAllText(filePath, Encoding.UTF8));
         }
 
         public static void KillScript(UserObject userobj, String args)
         {
             if (userobj.Level < Settings.ScriptLevel)
                 return;
+
+			ScriptManager.Items.Remove(args);
         }
 
         public static void ListScripts(UserObject userobj)
         {
             if (userobj.Level < Settings.ScriptLevel)
                 return;
+
+			foreach (var script in ScriptManager.Items)
+			{
+				userobj.SendPacket(AresTCPPackets.NoSuch(script.ScriptName));
+			}
         }
 
         public static void Ban(UserObject userobj, UserObject target)
