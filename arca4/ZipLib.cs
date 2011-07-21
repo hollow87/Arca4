@@ -1,56 +1,48 @@
-﻿/*
- * 
- * A simple wrapper to allow .net interface with the popular
- * compression utility zlib1.dll.
- * 
- * Coded by oobe.
- * 
-*/
-
-using System;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿using System.Linq;
+using System.IO;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 
 namespace Compression
 {
     class ZipLib
     {
-        [DllImport("zlib1.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern int compress(byte[] destBuffer, ref uint destLen, byte[] sourceBuffer, uint sourceLen);
-
-        [DllImport("zlib1.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern int uncompress(byte[] destBuffer, ref uint destLen, byte[] sourceBuffer, uint sourceLen);
-
         public static byte[] Compress(byte[] data)
         {
-            uint _dLen = (uint)Math.Round((double)(data.Length * 1.1) + 12);
-            byte[] _d = new byte[_dLen];
+            byte[] result = null;
 
-            if (compress(_d, ref _dLen, data, (uint)data.Length) != 0)
-                return null;
+            using (MemoryStream ms = new MemoryStream())
+                using (Stream s = new DeflaterOutputStream(ms))
+                {
+                    s.Write(data, 0, data.Length);
+                    s.Close();
+                    result = ms.ToArray();
+                }
 
-            return _d.Take((int)_dLen).ToArray();
+            return result;
         }
+
         public static byte[] Decompress(byte[] data)
         {
-            uint _dLen = 8192;
-            byte[] _d = new byte[_dLen];
+            byte[] r = null;
 
-            if (uncompress(_d, ref _dLen, data, (uint)data.Length) != 0)
-                return null;
+            using (Stream s = new InflaterInputStream(new MemoryStream(data)))
+            {
+                byte[] b = new byte[8192];
+                int count = s.Read(b, 0, b.Length);
+                r = b.Take(count).ToArray();
+            }
 
-            return _d.Take((int)_dLen).ToArray();
+            return r;
         }
 
-        public static byte[] Decompress(byte[] data, uint final_size)
+        public static byte[] Decompress(byte[] data, int final_size)
         {
-            uint _dLen = final_size;
-            byte[] _d = new byte[_dLen];
+            byte[] r = null;
 
-            if (uncompress(_d, ref _dLen, data, (uint)data.Length) != 0)
-                return null;
+            using (Stream s = new InflaterInputStream(new MemoryStream(data)))
+                s.Read(r, 0, final_size);
 
-            return _d;
+            return r;
         }
     }
 }
