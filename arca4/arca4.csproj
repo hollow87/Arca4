@@ -92,7 +92,9 @@
     <Compile Include="UserRecordManager.cs" />
     <Compile Include="ZipLib.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="OtherFiles\ICSharpCode.SharpZipLib.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>copy "$(SolutionDir)Scripting\JS\*.dll" "$(TargetDir)"</PreBuildEvent>

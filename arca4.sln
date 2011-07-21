@@ -12,11 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JS", "JS", "{4DE9D606-9FE7-
 		Scripting\JS\nspr4.dll = Scripting\JS\nspr4.dll
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OtherFiles", "OtherFiles", "{0DFD6C5E-D90A-4353-B266-54F1E46DC207}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\..\Desktop\SharpZipLib_0860_Bin\net-20\ICSharpCode.SharpZipLib.dll = ..\..\..\..\Desktop\SharpZipLib_0860_Bin\net-20\ICSharpCode.SharpZipLib.dll
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
